@@ -28,40 +28,65 @@ public class Config {
         return val;
     }
 
+    public void set(Map<String, String> properties, boolean global) throws IOException {
+        Properties props = global ? getGlobalConfig() : getLocalConfig();
+        File propsFile = global ? this.globalConfigFile : this.localConfigFile;
+
+        if(props == null) {
+            if(global) this.globalConfig = new Properties();
+            else this.localConfig = new Properties();
+
+            props = global ? getGlobalConfig() : getLocalConfig();
+        }
+        props.putAll(properties);
+
+        try(FileWriter writer = new FileWriter(propsFile)) {
+            props.store(writer, "");
+        }
+    }
+
     private String getStringFromCommandLine(String key) {
         return this.commandLineArgs.config.get(key);
     }
 
     private String getStringFromLocalConfig(String key) {
-        if (this.localConfig == null)
-            this.localConfig = tryReadConfigFile(this.localConfigFile, "local");
-        return this.localConfig != null
+        return getLocalConfig() != null
                 ? this.localConfig.getProperty(key)
                 : null;
     }
 
     private String getStringFromGlobalConfig(String key) {
-        if (this.globalConfig == null)
-            this.globalConfig = tryReadConfigFile(this.globalConfigFile, "global");
-        return this.globalConfig != null
+        return getGlobalConfig() != null
                 ? this.globalConfig.getProperty(key)
                 : null;
     }
 
-    private String getStringFromUI(String key) {
-        return UI.get().prompt(key);
+    public Properties getLocalConfig() {
+        if (this.localConfig == null)
+            this.localConfig = tryReadConfigFile(this.localConfigFile, "local");
+        return this.localConfig;
     }
 
-    private static Properties tryReadConfigFile(File configFile, String configFileName) {
+    public Properties getGlobalConfig() {
+        if (this.globalConfig == null)
+            this.globalConfig = tryReadConfigFile(this.globalConfigFile, "global");
+        return this.globalConfig;
+    }
+
+    private Properties tryReadConfigFile(File configFile, String configFileName) {
         try (FileReader reader = new FileReader(configFile)) {
             Properties properties = new Properties();
             properties.load(reader);
             return properties;
         } catch (IOException e) {
-            System.out.println("Info: Couldn't read " + configFileName + " config file (" + configFile.getAbsolutePath() + ")");
-            System.out.println("This doesn't have to concern you unless you were using that config file");
-            System.out.println();
+            System.err.println("Info: Couldn't read " + configFileName + " config file (" + configFile.getAbsolutePath() + ")");
+            System.err.println("This doesn't have to concern you unless you were using that config file");
+            System.err.println();
             return null;
         }
+    }
+
+    private String getStringFromUI(String key) {
+        return UI.get().prompt(key);
     }
 }

@@ -3,6 +3,9 @@ package automark;
 import automark.config.*;
 import automark.errors.*;
 
+import java.io.*;
+import java.util.*;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -18,6 +21,24 @@ public class Main {
         }
 
         Config config = new Config(commandLineArgs);
-        System.out.println(config.get("moodleBaseURL"));
+
+        if(commandLineArgs.mode == Mode.GET) {
+            Properties props = commandLineArgs.global ? config.getGlobalConfig() : config.getLocalConfig();
+            if(props != null) {
+                props.forEach((key, value) -> {
+                    System.out.println(key + "=" + value);
+                });
+            }
+        } else if(commandLineArgs.mode == Mode.SET) {
+            try {
+                config.set(commandLineArgs.config, commandLineArgs.global);
+                System.out.println("Successfully wrote to config file");
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("\nFailed to write config file");
+                System.exit(ErrorCodes.UNEXPECTED_ERROR);
+                return;  // should be unreachable
+            }
+        }
     }
 }
