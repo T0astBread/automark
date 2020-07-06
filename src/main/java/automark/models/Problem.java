@@ -22,7 +22,7 @@ public class Problem {
     }
 
     public enum Type {
-        EXCEPTION, NOT_SUBMITTED, INVALID_SUBMISSION_FILE, PLAGIARIZED, COMPILATION_ERROR;
+        EXCEPTION, NOT_SUBMITTED, INVALID_SUBMISSION_FILE, PLAGIARIZED, COMPILATION_ERROR, TEST_SUITE_FAILURE, TEST_FAILURE;
     }
 
     public static Problem createException(String stage, Exception underlyingException) {
@@ -51,5 +51,13 @@ public class Problem {
                 .map(diagnostic -> diagnostic.getMessage(null) + " at " + diagnostic.getSource().getName() + ":" + diagnostic.getLineNumber() + ":" + diagnostic.getColumnNumber())
                 .collect(Collectors.joining("\n"));
         return new Problem(stage, Type.COMPILATION_ERROR, summary);
+    }
+
+    public static Problem createTestSuiteFail(String stage, String testSuiteName) {
+        return new Problem(stage, Type.TEST_SUITE_FAILURE, testSuiteName);
+    }
+
+    public static Problem createTestFail(String stage, String testSuiteName, String testName) {
+        return new Problem(stage, Type.TEST_FAILURE, testSuiteName + "::" + testName);
     }
 }

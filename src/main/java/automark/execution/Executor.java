@@ -7,6 +7,7 @@ import automark.execution.compile.*;
 import automark.execution.download.*;
 import automark.execution.extract.*;
 import automark.execution.jplag.*;
+import automark.execution.test.*;
 import automark.models.*;
 import com.google.gson.*;
 import com.google.gson.reflect.*;
@@ -22,6 +23,7 @@ public class Executor {
             new ExtractStage(),
             new JPlagStage(),
             new CompileStage(),
+            new TestStage(),
     };
 
     private final Config config;

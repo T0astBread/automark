@@ -1,6 +1,7 @@
 package automark;
 
 import automark.errors.*;
+import automark.models.*;
 
 import java.io.*;
 import java.nio.file.*;
@@ -61,5 +62,9 @@ public class Utils {
         }
         dir.mkdirs();
         return dir;
+    }
+
+    public static String getWantedPackageForSubmission(Submission submission) {
+        return "automark.testbed." + submission.getSlug();
     }
 }

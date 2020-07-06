@@ -13,9 +13,12 @@ import java.nio.file.*;
 import java.util.*;
 
 public class CompileStage implements Stage {
+
+    public static final String NAME = "COMPILE";
+
     @Override
     public String getName() {
-        return "COMPILE";
+        return NAME;
     }
 
     @Override
@@ -24,7 +27,7 @@ public class CompileStage implements Stage {
         File compileDir = Utils.cleanAndMakeStageDir(new File(config.getWorkingDir(), getName().toLowerCase()));
         File extractDir = new File(config.getWorkingDir(), ExtractStage.NAME.toLowerCase());
         if (!(extractDir.exists() && extractDir.isDirectory()))
-            throw new AutomarkException("Folder from extract stage doesn't exist - maybe try re-running the " + ExtractStage.NAME + " stage? (i.e. rollback and re-run)");
+            throw new AutomarkException("Folder from extract stage doesn't exist - maybe try re-running the extract stage? (i.e. rollback and re-run)");
 
         try {
             Utils.copyFolder(extractDir.toPath(), compileDir.toPath());
@@ -74,7 +77,7 @@ public class CompileStage implements Stage {
             }
 
             try {
-                String wantedPackage = "automark.testbed." + submission.getSlug();
+                String wantedPackage = Utils.getWantedPackageForSubmission(submission);
                 List<File> sourcesForCompilation = patchPackage(submissionFolder, allSourceFiles, wantedPackage);
                 UI.get().println("Patched package header of " + submission.getSlug());
 
