@@ -1,6 +1,9 @@
 package automark.models;
 
+import javax.tools.*;
 import java.io.*;
+import java.util.*;
+import java.util.stream.*;
 
 public class Problem {
     public final String stage;
@@ -19,7 +22,7 @@ public class Problem {
     }
 
     public enum Type {
-        EXCEPTION, NOT_SUBMITTED, INVALID_SUBMISSION_FILE, PLAGIARIZED;
+        EXCEPTION, NOT_SUBMITTED, INVALID_SUBMISSION_FILE, PLAGIARIZED, COMPILATION_ERROR;
     }
 
     public static Problem createException(String stage, Exception underlyingException) {
@@ -41,5 +44,12 @@ public class Problem {
 
     public static Problem createdPlagiarized(String stage) {
         return new Problem(stage, Type.PLAGIARIZED);
+    }
+
+    public static Problem createCompilationError(String stage, List<Diagnostic<? extends JavaFileObject>> diagnostics) {
+        String summary = diagnostics.stream()
+                .map(diagnostic -> diagnostic.getMessage(null) + " at " + diagnostic.getSource().getName() + ":" + diagnostic.getLineNumber() + ":" + diagnostic.getColumnNumber())
+                .collect(Collectors.joining("\n"));
+        return new Problem(stage, Type.COMPILATION_ERROR, summary);
     }
 }

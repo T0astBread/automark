@@ -3,6 +3,7 @@ package automark.execution;
 import automark.*;
 import automark.config.*;
 import automark.errors.*;
+import automark.execution.compile.*;
 import automark.execution.download.*;
 import automark.execution.extract.*;
 import automark.execution.jplag.*;
@@ -20,6 +21,7 @@ public class Executor {
             new DownloadStage(),
             new ExtractStage(),
             new JPlagStage(),
+            new CompileStage(),
     };
 
     private final Config config;
