@@ -19,7 +19,7 @@ public class Problem {
     }
 
     public enum Type {
-        EXCEPTION, NOT_SUBMITTED;
+        EXCEPTION, NOT_SUBMITTED, INVALID_SUBMISSION_FILE;
     }
 
     public static Problem createException(String stage, Exception underlyingException) {
@@ -33,5 +33,9 @@ public class Problem {
 
     public static Problem createNotSubmitted(String stage) {
         return new Problem(stage, Type.NOT_SUBMITTED);
+    }
+
+    public static Problem createInvalidSubmissionFile(String stage, String summary) {
+        return new Problem(stage, Type.INVALID_SUBMISSION_FILE, summary);
     }
 }

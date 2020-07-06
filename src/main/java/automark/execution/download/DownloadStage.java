@@ -11,9 +11,11 @@ import java.util.*;
 import java.util.stream.*;
 
 public class DownloadStage implements Stage {
+    public static final String NAME = "DOWNLOAD";
+
     @Override
     public String getName() {
-        return "DOWNLOAD";
+        return NAME;
     }
 
     @Override
@@ -22,15 +24,7 @@ public class DownloadStage implements Stage {
 
         try (MoodleSession moodleSession = new MoodleSession(config.get(ConfigConstants.MOODLE_BASE_URL))) {
 
-            File downloadsDir = new File(config.getWorkingDir(), getName().toLowerCase());
-            if(downloadsDir.exists()) {
-                try {
-                    Utils.deleteFolder(downloadsDir.toPath());
-                } catch (IOException e) {
-                    throw new AutomarkException("Failed to clear leftover bits from previous run", e);
-                }
-            }
-            downloadsDir.mkdirs();
+            File downloadsDir = Utils.cleanAndMakeStageDir(new File(config.getWorkingDir(), getName().toLowerCase()));
 
             moodleSession.login(
                     config.get(ConfigConstants.MOODLE_USERNAME),
