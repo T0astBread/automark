@@ -8,12 +8,14 @@ import java.util.*;
 public class CommandLineArgs {
     public final Mode mode;
     public final boolean global;
+    public final String rollbackTarget;
     public final File workingDir;
     public final Map<String, String> config;
 
-    private CommandLineArgs(Mode mode, boolean global, File workingDir, Map<String, String> config) {
+    private CommandLineArgs(Mode mode, boolean global, String rollbackTarget, File workingDir, Map<String, String> config) {
         this.mode = mode;
         this.global = global;
+        this.rollbackTarget = rollbackTarget;
         this.workingDir = workingDir;
         this.config = config;
     }
@@ -23,6 +25,7 @@ public class CommandLineArgs {
 
         Mode mode = Mode.START;
         boolean global = false;
+        String rollbackTarget = null;
         File workingDir = new File(System.getProperty("user.dir"));
         Map<String, String> config = new HashMap<>();
 
@@ -65,14 +68,19 @@ public class CommandLineArgs {
             } else if(i == 0) {
                 try {
                     mode = Mode.valueOf(arg.toUpperCase());
+                    if(mode == Mode.ROLLBACK) {
+                        rollbackTarget = iterator.next();
+                        if(rollbackTarget.startsWith("-"))
+                            throw new AutomarkException("rollback must be followed by the rollback target stage");
+                    }
                 } catch(IllegalArgumentException e) {
-                    throw new AutomarkException("Invalid subcommand " + arg + " (must be get/set/start)");
+                    throw new AutomarkException("Invalid subcommand " + arg + " (must be get/set/start/rollback)");
                 }
 
             } else {
                 throw new AutomarkException("Illegal argument " + arg);
             }
         }
-        return new CommandLineArgs(mode, global, workingDir, config);
+        return new CommandLineArgs(mode, global, rollbackTarget, workingDir, config);
     }
 }

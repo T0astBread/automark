@@ -1,5 +1,5 @@
 package automark.config;
 
 public enum Mode {
-    START, SET, GET
+    START, SET, GET, ROLLBACK
 }

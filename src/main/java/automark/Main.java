@@ -36,10 +36,7 @@ public class Main {
                 config.set(commandLineArgs.config, commandLineArgs.global);
                 System.out.println("Successfully wrote to config file");
             } catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("\nFailed to write config file");
-                System.exit(ErrorCodes.UNEXPECTED_ERROR);
-                return;  // should be unreachable
+                handleTopLevelException(e, "write config file");
             }
 
         } else if(commandLineArgs.mode == Mode.START) {
@@ -47,11 +44,25 @@ public class Main {
             try {
                 executor.run();
             } catch (AutomarkException e) {
-                e.printStackTrace();
-                System.err.println("\nFailed to complete execution");
-                System.exit(ErrorCodes.UNEXPECTED_ERROR);
-                return;  // should be unreachable
+                handleTopLevelException(e, "complete execution");
+            }
+
+        } else if(commandLineArgs.mode == Mode.ROLLBACK) {
+            Executor executor = new Executor(config);
+            try {
+                executor.rollback(commandLineArgs.rollbackTarget);
+            } catch (AutomarkException e) {
+                handleTopLevelException(e, "complete rollback");
             }
         }
+    }
+
+    private static void handleTopLevelException(Exception e, String what) {
+        System.err.println("\nFailed to " + what);
+        if(e instanceof AutomarkException) {
+            System.err.println(e.getMessage() + "\n");
+        }
+        e.printStackTrace();
+        System.exit(ErrorCodes.UNEXPECTED_ERROR);
     }
 }
