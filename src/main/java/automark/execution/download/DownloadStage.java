@@ -21,9 +21,9 @@ public class DownloadStage implements Stage {
     @Override
     public List<Submission> run(Config config, List<Submission> submissions) throws AutomarkException {
         String assignmentID = config.get(ConfigConstants.ASSIGNMENT_ID);
+        config.trySaveBack(ConfigConstants.ASSIGNMENT_ID, assignmentID);
 
         try (MoodleSession moodleSession = new MoodleSession(config.get(ConfigConstants.MOODLE_BASE_URL))) {
-
             File downloadsDir = Utils.cleanAndMakeStageDir(new File(config.getWorkingDir(), getName().toLowerCase()));
 
             moodleSession.login(
@@ -32,6 +32,7 @@ public class DownloadStage implements Stage {
 
             submissions = moodleSession.listSubmissions(assignmentID);
             String[] teachers = config.getList(ConfigConstants.MOODLE_TEACHERS);
+            config.trySaveBack(ConfigConstants.MOODLE_TEACHERS, String.join(" ", teachers));
             submissions = filterTeachers(submissions, teachers);
 
             for (Submission submission : submissions) {

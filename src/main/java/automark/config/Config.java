@@ -70,6 +70,17 @@ public class Config {
         }
     }
 
+    public void trySaveBack(String key, String value) {
+        if(get(key, INPUT_LOCAL_CONFIG) == null) {
+            try {
+                set(Map.of(key, value), false);
+            } catch (IOException e) {
+                UI.get().println("Warning: Unable to set " + value);
+                e.printStackTrace();
+            }
+        }
+    }
+
     public File getWorkingDir() {
         return this.commandLineArgs.workingDir;
     }

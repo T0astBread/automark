@@ -15,9 +15,12 @@ import java.util.*;
 import java.util.stream.*;
 
 public class ExtractStage implements Stage {
+
+    public static final String NAME = "EXTRACT";
+
     @Override
     public String getName() {
-        return "EXTRACT";
+        return NAME;
     }
 
     @Override
@@ -28,6 +31,7 @@ public class ExtractStage implements Stage {
 
         File stageDir = Utils.cleanAndMakeStageDir(new File(config.getWorkingDir(), getName().toLowerCase()));
         String[] sourceFileNames = config.getList(ConfigConstants.SOURCE_FILES);
+        config.trySaveBack(ConfigConstants.SOURCE_FILES, String.join(" ", sourceFileNames));
 
         for (Submission submission : submissions) {
             if (submission.isDisqualified())

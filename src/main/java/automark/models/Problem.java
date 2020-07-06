@@ -19,7 +19,7 @@ public class Problem {
     }
 
     public enum Type {
-        EXCEPTION, NOT_SUBMITTED, INVALID_SUBMISSION_FILE;
+        EXCEPTION, NOT_SUBMITTED, INVALID_SUBMISSION_FILE, PLAGIARIZED;
     }
 
     public static Problem createException(String stage, Exception underlyingException) {
@@ -37,5 +37,9 @@ public class Problem {
 
     public static Problem createInvalidSubmissionFile(String stage, String summary) {
         return new Problem(stage, Type.INVALID_SUBMISSION_FILE, summary);
+    }
+
+    public static Problem createdPlagiarized(String stage) {
+        return new Problem(stage, Type.PLAGIARIZED);
     }
 }

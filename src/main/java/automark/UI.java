@@ -83,6 +83,76 @@ public class UI {
         System.out.println(text);
     }
 
+    public List<String> editWhitelist(List<String> possibleEntries, List<String> enabledEntries, String message) {
+        while (true) {
+            whitelistPrint(possibleEntries, enabledEntries);
+            String answer = prompt("\n" + message +
+                    "\n\nAdd: a <indices to list>\n" +
+                    "Remove: r <indices to unlist>\n" +
+                    "Add all: A\n" +
+                    "Remove all: R\n" +
+                    "Exit: q\n" +
+                    "a/r/A/R/q> ");
+
+            if(answer.startsWith("a ")) {
+                List<String> newEnabledEntries = new ArrayList<>();
+                List<Integer> newEntries = whitelistParseAnswer(answer);
+                for(int i = 0; i < possibleEntries.size(); i++) {
+                    String entry = possibleEntries.get(i);
+                    if(newEntries.contains(i) || enabledEntries.contains(entry))
+                        newEnabledEntries.add(entry);
+                }
+                enabledEntries = newEnabledEntries;
+
+            } else if(answer.startsWith("r ")) {
+                List<String> newEnabledEntries = new ArrayList<>();
+                List<Integer> removedEntries = whitelistParseAnswer(answer);
+                for (int i = 0; i < possibleEntries.size(); i++) {
+                    String entry = possibleEntries.get(i);
+                    if (!removedEntries.contains(i) && enabledEntries.contains(entry))
+                        newEnabledEntries.add(entry);
+                }
+                enabledEntries = newEnabledEntries;
+
+            } else if(answer.equals("A")) {
+                enabledEntries = List.copyOf(possibleEntries);
+
+            } else if(answer.equals("R")) {
+                enabledEntries = Collections.emptyList();
+
+            } else if(answer.equals("q")) {
+                whitelistPrint(possibleEntries, enabledEntries);
+                if(askForConfirmation("Is that correct?", true)) {
+                    return enabledEntries;
+                }
+            }
+        }
+    }
+
+    private void whitelistPrint(List<String> possibleEntries, List<String> enabledEntries) {
+        println("");
+        for (int i = 0; i < possibleEntries.size(); i++) {
+            String e = possibleEntries.get(i);
+            print(enabledEntries.contains(e) ? "x  " : "   ");
+            print(i + "  ");
+            println(e);
+        }
+    }
+
+    private List<Integer> whitelistParseAnswer(String answer) {
+        String [] tokens = answer.substring(2).split("\\s+");
+        List<Integer> indices = new ArrayList<>();
+        for (String token : tokens) {
+            try {
+                int idx = Integer.parseInt(token);
+                indices.add(idx);
+            } catch(NumberFormatException e) {
+                println("Invalid index: " + token);
+            }
+        }
+        return indices;
+    }
+
     public String askForConfigValue(String key) {
         String message = getConfigValueMessage(key);
 
@@ -117,7 +187,7 @@ public class UI {
                         "No emails will be sent. These are used to filter out teachers\n" +
                         "> ";
             default:
-                return key + ": ";
+                return key + "> ";
         }
     }
 

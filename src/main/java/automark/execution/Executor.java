@@ -5,6 +5,7 @@ import automark.config.*;
 import automark.errors.*;
 import automark.execution.download.*;
 import automark.execution.extract.*;
+import automark.execution.jplag.*;
 import automark.models.*;
 import com.google.gson.*;
 import com.google.gson.reflect.*;
@@ -17,6 +18,7 @@ public class Executor {
     private static final Stage[] STAGES = new Stage[]{
             new DownloadStage(),
             new ExtractStage(),
+            new JPlagStage(),
     };
 
     private final Config config;
