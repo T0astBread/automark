@@ -2,6 +2,7 @@ package automark;
 
 import automark.config.*;
 import automark.errors.*;
+import automark.execution.*;
 
 import java.io.*;
 import java.util.*;
@@ -29,6 +30,7 @@ public class Main {
                     System.out.println(key + "=" + value);
                 });
             }
+
         } else if(commandLineArgs.mode == Mode.SET) {
             try {
                 config.set(commandLineArgs.config, commandLineArgs.global);
@@ -36,6 +38,17 @@ public class Main {
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("\nFailed to write config file");
+                System.exit(ErrorCodes.UNEXPECTED_ERROR);
+                return;  // should be unreachable
+            }
+
+        } else if(commandLineArgs.mode == Mode.START) {
+            Executor executor = new Executor(config);
+            try {
+                executor.run();
+            } catch (AutomarkException e) {
+                e.printStackTrace();
+                System.err.println("\nFailed to complete execution");
                 System.exit(ErrorCodes.UNEXPECTED_ERROR);
                 return;  // should be unreachable
             }

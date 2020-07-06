@@ -6,6 +6,16 @@ import java.io.*;
 import java.util.*;
 
 public class Config {
+    public static final int
+            INPUT_CMD_LINE = 1,
+            INPUT_LOCAL_CONFIG = 2,
+            INPUT_GLOBAL_CONFIG = 4,
+            INPUT_UI = 8;
+    public static final int INPUT_ALL = INPUT_CMD_LINE |
+            INPUT_LOCAL_CONFIG |
+            INPUT_GLOBAL_CONFIG |
+            INPUT_UI;
+
     private final CommandLineArgs commandLineArgs;
     private final File localConfigFile, globalConfigFile;
     private Properties localConfig, globalConfig;
@@ -18,31 +28,50 @@ public class Config {
     }
 
     public String get(String key) {
-        String val = getStringFromCommandLine(key);
-        if (val == null)
+        return get(key, INPUT_ALL);
+    }
+
+    public String get(String key, int configSourceMask) {
+        String val = null;
+        if (Utils.isSet(configSourceMask, INPUT_CMD_LINE))
+            val = getStringFromCommandLine(key);
+        if (val == null && Utils.isSet(configSourceMask, INPUT_LOCAL_CONFIG))
             val = getStringFromLocalConfig(key);
-        if (val == null)
+        if (val == null && Utils.isSet(configSourceMask, INPUT_GLOBAL_CONFIG))
             val = getStringFromGlobalConfig(key);
-        if (val == null)
-            val = getStringFromUI(key);
+        if (val == null && Utils.isSet(configSourceMask, INPUT_UI))
+            val = UI.get().askForConfigValue(key);
         return val;
+    }
+
+    public String[] getList(String key) {
+        return getList(key, INPUT_ALL);
+    }
+
+    public String[] getList(String key, int configSourceMask) {
+        String rawVal = get(key, configSourceMask);
+        return rawVal == null ? null : rawVal.split("\\s+");
     }
 
     public void set(Map<String, String> properties, boolean global) throws IOException {
         Properties props = global ? getGlobalConfig() : getLocalConfig();
         File propsFile = global ? this.globalConfigFile : this.localConfigFile;
 
-        if(props == null) {
-            if(global) this.globalConfig = new Properties();
+        if (props == null) {
+            if (global) this.globalConfig = new Properties();
             else this.localConfig = new Properties();
 
             props = global ? getGlobalConfig() : getLocalConfig();
         }
         props.putAll(properties);
 
-        try(FileWriter writer = new FileWriter(propsFile)) {
+        try (FileWriter writer = new FileWriter(propsFile)) {
             props.store(writer, "");
         }
+    }
+
+    public File getWorkingDir() {
+        return this.commandLineArgs.workingDir;
     }
 
     private String getStringFromCommandLine(String key) {
@@ -84,9 +113,5 @@ public class Config {
             System.err.println();
             return null;
         }
-    }
-
-    private String getStringFromUI(String key) {
-        return UI.get().prompt(key);
     }
 }

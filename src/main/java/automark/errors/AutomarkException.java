@@ -7,4 +7,8 @@ public class AutomarkException extends Exception {
     public AutomarkException(String message) {
         super(message);
     }
+
+    public AutomarkException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
