@@ -10,14 +10,15 @@ import automark.execution.jplag.*;
 import automark.execution.test.*;
 import automark.models.*;
 import com.google.gson.*;
+import com.google.gson.internal.*;
 import com.google.gson.reflect.*;
 
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class Executor {
-    private static final String STAGE_KEY = "nextStage";
     private static final Stage[] STAGES = new Stage[]{
             new DownloadStage(),
             new ExtractStage(),
@@ -25,6 +26,8 @@ public class Executor {
             new CompileStage(),
             new TestStage(),
     };
+    private static final String STAGE_KEY = "nextStage";
+    private static final Gson GSON = new Gson();
 
     private final Config config;
 
@@ -33,8 +36,6 @@ public class Executor {
     }
 
     public void run() throws AutomarkException {
-        final Gson GSON = new Gson();
-
         int stageIndex = getStageIndex();
 
         if (stageIndex >= STAGES.length) {
@@ -59,20 +60,20 @@ public class Executor {
 
             if(stageIndex > 0) {
                 Stage prevStage = STAGES[stageIndex - 1];
-                File prevSubmissionsFile = new File(submissionsFolder, getSubmissionsFileName(prevStage));
-                if (prevSubmissionsFile.exists()) {
-                    try (FileReader reader = new FileReader(prevSubmissionsFile)) {
-                        Type listType = new TypeToken<ArrayList<Submission>>() {
-                        }.getType();
-                        submissions = GSON.fromJson(reader, listType);
-                    } catch (IOException e) {
-                        throw new AutomarkException("Failed to read " + prevSubmissionsFile.getName(), e);
-                    }
-                }
+                submissions = readSubmissions(prevStage);
             }
 
             Stage stage = STAGES[stageIndex];
             List<Submission> newSubmissions = stage.run(this.config, submissions);
+
+            List<Submission> submissionsWithNewProblems = newSubmissions.stream()
+                    .filter(submission -> submission.getProblems().stream()
+                            .anyMatch(problem -> problem.stage.equals(stage.getName())))
+                    .collect(Collectors.toList());
+
+            UI.get().println("\n\nSubmissions with problems created in this stage:\n");
+            UI.get().printStatus(submissionsWithNewProblems);
+            UI.get().println("\n");
 
             try {
                 this.config.set(Map.of(STAGE_KEY, Integer.toString(stageIndex + 1)), false);
@@ -86,6 +87,8 @@ public class Executor {
             } catch (IOException e) {
                 throw new AutomarkException("Failed to write submissions.json", e);
             }
+
+            UI.get().println("Done with stage " + stage.getName());
         }
     }
 
@@ -123,6 +126,45 @@ public class Executor {
                     throw new AutomarkException("Failed to delete working directory for stage " + stage.getName() + ": " + stageDir.getAbsolutePath(), e);
                 }
             }
+        }
+    }
+
+    public void printStatus() throws AutomarkException {
+        int stageIndex = getStageIndex() - 1;  // Get the last completed stage (as opposed to the next stage)
+
+        if(stageIndex == -1) {
+            UI.get().println("No stages have been run yet - there's nothing to show!");
+        } else if(stageIndex >= STAGES.length) {
+            stageIndex = STAGES.length - 1;
+        }
+
+        Stage lastStage = STAGES[stageIndex];
+        List<Submission> submissions = readSubmissions(lastStage);
+
+        UI.get().printStatus(submissions);
+    }
+
+    public static int indexOfStage(String stageName) {
+        for (int i = 0; i < STAGES.length; i++) {
+            Stage stage = STAGES[i];
+            if (stage.getName().equals(stageName))
+                return i;
+        }
+        return -1;
+    }
+
+    private List<Submission> readSubmissions(Stage stage) throws AutomarkException {
+        File submissionsFile = new File(getSubmissionsFolder(), getSubmissionsFileName(stage));
+        if (submissionsFile.exists()) {
+            try (FileReader reader = new FileReader(submissionsFile)) {
+                Type listType = new TypeToken<ArrayList<Submission>>() {
+                }.getType();
+                return GSON.fromJson(reader, listType);
+            } catch (IOException e) {
+                throw new AutomarkException("Failed to read " + submissionsFile.getName(), e);
+            }
+        } else {
+            throw new AutomarkException("Submissions data file does not exist (looked for " + submissionsFile.getAbsolutePath() + ")");
         }
     }
 

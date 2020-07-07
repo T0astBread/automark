@@ -54,6 +54,14 @@ public class Main {
             } catch (AutomarkException e) {
                 handleTopLevelException(e, "complete rollback");
             }
+
+        } else if (commandLineArgs.mode == Mode.STATUS) {
+            Executor executor = new Executor(config);
+            try {
+                executor.printStatus();
+            } catch (AutomarkException e) {
+                handleTopLevelException(e, "print status");
+            }
         }
     }
 

@@ -2,9 +2,12 @@ package automark;
 
 import automark.config.*;
 import automark.errors.*;
+import automark.execution.*;
+import automark.models.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class UI {
     private static UI instance;
@@ -94,17 +97,17 @@ public class UI {
                     "Exit: q\n" +
                     "a/r/A/R/q> ");
 
-            if(answer.startsWith("a ")) {
+            if (answer.startsWith("a ")) {
                 List<String> newEnabledEntries = new ArrayList<>();
                 List<Integer> newEntries = whitelistParseAnswer(answer);
-                for(int i = 0; i < possibleEntries.size(); i++) {
+                for (int i = 0; i < possibleEntries.size(); i++) {
                     String entry = possibleEntries.get(i);
-                    if(newEntries.contains(i) || enabledEntries.contains(entry))
+                    if (newEntries.contains(i) || enabledEntries.contains(entry))
                         newEnabledEntries.add(entry);
                 }
                 enabledEntries = newEnabledEntries;
 
-            } else if(answer.startsWith("r ")) {
+            } else if (answer.startsWith("r ")) {
                 List<String> newEnabledEntries = new ArrayList<>();
                 List<Integer> removedEntries = whitelistParseAnswer(answer);
                 for (int i = 0; i < possibleEntries.size(); i++) {
@@ -114,15 +117,15 @@ public class UI {
                 }
                 enabledEntries = newEnabledEntries;
 
-            } else if(answer.equals("A")) {
+            } else if (answer.equals("A")) {
                 enabledEntries = List.copyOf(possibleEntries);
 
-            } else if(answer.equals("R")) {
+            } else if (answer.equals("R")) {
                 enabledEntries = Collections.emptyList();
 
-            } else if(answer.equals("q")) {
+            } else if (answer.equals("q")) {
                 whitelistPrint(possibleEntries, enabledEntries);
-                if(askForConfirmation("Is that correct?", true)) {
+                if (askForConfirmation("Is that correct?", true)) {
                     return enabledEntries;
                 }
             }
@@ -140,13 +143,13 @@ public class UI {
     }
 
     private List<Integer> whitelistParseAnswer(String answer) {
-        String [] tokens = answer.substring(2).split("\\s+");
+        String[] tokens = answer.substring(2).split("\\s+");
         List<Integer> indices = new ArrayList<>();
         for (String token : tokens) {
             try {
                 int idx = Integer.parseInt(token);
                 indices.add(idx);
-            } catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 println("Invalid index: " + token);
             }
         }
@@ -189,6 +192,77 @@ public class UI {
             default:
                 return key + "> ";
         }
+    }
+
+    public void printStatus(List<Submission> submissions) {
+        for (Submission submission : submissions) {
+            List<Problem> problems = submission.getProblems();
+            boolean hasProblems = problems.size() > 0;
+            if (submission.isDisqualified() || hasProblems) {
+                print(submission.getSlug());
+                print(" (");
+                print(submission.getStudentName());
+                println(")");
+            }
+
+            if (submission.isDisqualified()) {
+                printIndent(1);
+                println("DISQUALIFIED from further processing");
+            }
+
+            String problemSummary = problems.stream()
+                    .collect(Collectors.groupingBy(problem -> problem.type + " in stage " + problem.stage))
+                    .entrySet()
+                    .stream()
+                    .sorted(Comparator.comparingInt(this::sortIndexOf))
+                    .map(entry ->
+                            "\t" + entry.getKey()+ (
+                                    entry.getValue().size() > 1 ? " (" + entry.getValue().size() + " times)" : ""
+                            ) + shortSummary(entry.getValue()))
+                    .collect(Collectors.joining("\n"));
+            println(problemSummary);
+
+//            for (Problem problem : problems) {
+//                printIndent(1);
+//                print(problem.type.toString());
+//                print(" in stage ");
+//                println(problem.stage);
+////                for (String line : problem.summary.split("\n")) {
+////                    printIndent(2);
+////                    println(line);
+////                }
+//            }
+
+            print("\n");
+        }
+    }
+
+    private int sortIndexOf(Map.Entry<String, List<Problem>> entry) {
+        return Executor.indexOfStage(entry.getValue().get(0).stage);
+    }
+
+    private String shortSummary(List<Problem> problems) {
+        return problems.stream()
+                .map(this::shortSummary)
+                .filter(Objects::nonNull)
+                .map(s -> "\n\t\t" + s)
+                .collect(Collectors.joining()) + "\n";
+    }
+
+    private String shortSummary(Problem problem) {
+        switch (problem.type) {
+            case TEST_FAILURE:
+            case TEST_SUITE_FAILURE:
+            case COMPILATION_ERROR:
+            case EXCEPTION:
+                return problem.summary.replace("\n", "\n\t\t");
+            default:
+                return null;
+        }
+    }
+
+    private void printIndent(int indentation) {
+        print("\t".repeat(indentation));
     }
 
     private String readLine() {
