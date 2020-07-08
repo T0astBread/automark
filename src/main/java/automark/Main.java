@@ -10,6 +10,8 @@ public class Main {
         try {
             main0(args);
         } catch (UserFriendlyException e) {
+            e.printStackTrace();
+            System.err.println();
             System.err.println(e.getMessage());
             System.exit(E_USER_ERROR);
         }
@@ -27,6 +29,12 @@ public class Main {
                 break;
             case ROLLBACK:
                 Rollback.run(commandLineArgs.workingDir, commandLineArgs.rollbackStage);
+                break;
+            case MARK_RESOLVED:
+                MarkResolved.run(commandLineArgs.workingDir,
+                        commandLineArgs.markResolvedSubmissionSlug,
+                        commandLineArgs.markResolvedProblemIdentifier,
+                        commandLineArgs.markResolvedRequalify);
                 break;
         }
     }

@@ -83,16 +83,18 @@ public class Metadata {
     public static class MetadataLoadingResult {
         public final List<Submission> submissions;
         public final File metadataFile;
-        public final Stage stage;
-        public final int stageIndex;
+        public final Stage nextStage;
+        public final Stage lastStage;
+        public final int nextStageIndex;
         public final boolean hasGoneThroughAllStages;
 
-        public MetadataLoadingResult(List<Submission> submissions, File metadataFile, int stageIndex, boolean hasGoneThroughAllStages) {
+        public MetadataLoadingResult(List<Submission> submissions, File metadataFile, int nextStageIndex, boolean hasGoneThroughAllStages) {
             this.submissions = submissions;
             this.metadataFile = metadataFile;
-            this.stageIndex = stageIndex;
+            this.nextStageIndex = nextStageIndex;
+            this.nextStage = nextStageIndex < Stage.values().length ? Stage.values()[nextStageIndex] : null;
+            this.lastStage = nextStageIndex > 0 ? Stage.values()[nextStageIndex - 1] : null;
             this.hasGoneThroughAllStages = hasGoneThroughAllStages;
-            this.stage = Stage.values()[stageIndex];
         }
     }
 }

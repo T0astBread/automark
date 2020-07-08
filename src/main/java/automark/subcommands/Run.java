@@ -32,7 +32,7 @@ public class Run {
         Metadata.getDataDir(workingDir).mkdirs();
         Metadata.getMetadataDir(workingDir).mkdirs();
 
-        for (int i = loadingResult.stageIndex; i < Stage.values().length; i++) {
+        for (int i = loadingResult.nextStageIndex; i < Stage.values().length; i++) {
             Stage stage = Stage.values()[i];
             System.out.println("Running stage " + stage.name());
             System.out.println();

@@ -10,13 +10,19 @@ public class CommandLineArgs {
     public final File workingDir;
     public final Subcommand subcommand;
     public final Stage rollbackStage;
+    public final String markResolvedSubmissionSlug;
+    public final String markResolvedProblemIdentifier;
+    public final boolean markResolvedRequalify;
 
     public static CommandLineArgs parse(String[] args) throws UserFriendlyException {
         ListIterator<String> iterator = List.of(args).listIterator();
 
         File workingDir = new File(System.getProperty("user.dir"));
-        Subcommand subcommand = Subcommand.RUN;
+        Subcommand subcommand = null;
         Stage rollbackStage = null;
+        String markResolvedSubmissionSlug = null;
+        String markResolvedProblemIdentifier = null;
+        boolean markResolvedRequalify = false;
 
         // Format: [options] subcommand [subcommand positional args] [options]
         while (iterator.hasNext()) {
@@ -32,10 +38,21 @@ public class CommandLineArgs {
                 if (!(workingDir.exists() && workingDir.isDirectory()))
                     throw new UserFriendlyException("workingDir must exist");
 
+            } else if ("--requalify".equals(token)) {
+                markResolvedRequalify = true;
+
+            } else if ("--problem".equals(token)) {
+                if(!iterator.hasNext())
+                    throw new UserFriendlyException("--problem must by followd by <problem_type|problem_index>");
+                markResolvedProblemIdentifier = iterator.next();
+
+            } else if (subcommand != null) {
+                throw new UserFriendlyException("Subcommand has already been specified as " + subcommand.name() + "(tried to specify again as " + token + ")");
+
             } else {
                 // Match a subcommand
                 try {
-                    subcommand = Subcommand.valueOf(token.toUpperCase());
+                    subcommand = Subcommand.valueOf(token.toUpperCase().replaceAll("-", "_"));
                 } catch (IllegalArgumentException e) {
                     throw new UserFriendlyException("Unknown subcommand: " + token);
                 }
@@ -50,20 +67,35 @@ public class CommandLineArgs {
                     } catch (IllegalArgumentException e) {
                         throw new UserFriendlyException("Unknown stage in rollback subcommand " + rollbackStageName);
                     }
+
+                } else if (subcommand == Subcommand.MARK_RESOLVED) {
+                    if(!iterator.hasNext())
+                        throw new UserFriendlyException("mark-resolved must be followed by: <submission_slug|_>");
+                    markResolvedSubmissionSlug = iterator.next();
                 }
             }
         }
 
-        return new CommandLineArgs(workingDir, subcommand, rollbackStage);
+        if (subcommand == null)
+            subcommand = Subcommand.RUN;
+
+        if(subcommand != Subcommand.MARK_RESOLVED && (markResolvedProblemIdentifier != null || markResolvedRequalify)) {
+            System.out.println("Info: --problem and --requalify are only effective on the mark-resolve subcommand");
+        }
+
+        return new CommandLineArgs(workingDir, subcommand, rollbackStage, markResolvedSubmissionSlug, markResolvedProblemIdentifier, markResolvedRequalify);
     }
 
-    private CommandLineArgs(File workingDir, Subcommand subcommand, Stage rollbackStage) {
+    private CommandLineArgs(File workingDir, Subcommand subcommand, Stage rollbackStage, String markResolvedSubmissionSlug, String markResolvedProblemIdentifier, boolean markResolvedRequalify) {
         this.workingDir = workingDir;
         this.subcommand = subcommand;
         this.rollbackStage = rollbackStage;
+        this.markResolvedSubmissionSlug = markResolvedSubmissionSlug;
+        this.markResolvedProblemIdentifier = markResolvedProblemIdentifier;
+        this.markResolvedRequalify = markResolvedRequalify;
     }
 
     public enum Subcommand {
-        RUN, ROLLBACK, STATUS;
+        RUN, ROLLBACK, STATUS, MARK_RESOLVED
     }
 }

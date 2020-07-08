@@ -29,6 +29,11 @@ public class Summaries {
             out.print(submission.getSlug());
             out.println(")");
 
+            if (submission.isDisqualified()) {
+                printIndentation(out, 1);
+                out.println("Disqualified from further processing");
+            }
+
             if (submission.getProblems().size() == 0) {
                 printIndentation(out, 1);
                 out.println("No problems");

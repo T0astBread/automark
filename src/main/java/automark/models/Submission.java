@@ -7,7 +7,7 @@ public class Submission {
     private final String studentName;
     private final String studentEmail;
     private final String fileURL;
-    private final List<Problem> problems;
+    private List<Problem> problems;
     private boolean isDisqualified = false;
 
     public Submission(String slug, String studentName, String studentEmail, String fileURL) {
@@ -36,6 +36,10 @@ public class Submission {
 
     public List<Problem> getProblems() {
         return problems;
+    }
+
+    public void setProblems(List<Problem> problems) {
+        this.problems = problems;
     }
 
     public void addProblem(Problem problem) {
