@@ -11,7 +11,7 @@ public class Problem {
     public final String summary;
 
     public Problem(Stage stage, Type type) {
-        this(stage, type, type + " (in stage " + stage + ")");
+        this(stage, type, null);
     }
 
     public Problem(Stage stage, Type type, String summary) {
