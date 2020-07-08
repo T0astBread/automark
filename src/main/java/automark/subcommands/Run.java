@@ -29,6 +29,9 @@ public class Run {
             return;
         }
 
+        Metadata.getDataDir(workingDir).mkdirs();
+        Metadata.getMetadataDir(workingDir).mkdirs();
+
         for (int i = loadingResult.stageIndex; i < Stage.values().length; i++) {
             Stage stage = Stage.values()[i];
             System.out.println("Running stage " + stage.name());

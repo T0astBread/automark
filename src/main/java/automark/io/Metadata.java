@@ -13,6 +13,7 @@ public class Metadata {
     private static final Gson GSON = new Gson();
 
     public static void saveSubmissions(List<Submission> submissions, File file) throws UserFriendlyException {
+        file.getParentFile().mkdirs();
         try (FileWriter writer = new FileWriter(file)) {
             GSON.toJson(submissions, writer);
         } catch (IOException e) {
@@ -66,11 +67,15 @@ public class Metadata {
     }
 
     public static File getMetadataFile(File workingDir, Stage stage) {
-        return new File(getMetadataDir(workingDir), stage.name().toLowerCase());
+        return new File(getMetadataDir(workingDir), stage.name().toLowerCase() + ".json");
     }
 
-    public static File mkStageDir(Stage stage, File workingDir) {
+    public static File mkStageDir(Stage stage, File workingDir) throws IOException {
         File stageDir = new File(getDataDir(workingDir), stage.name().toLowerCase());
+
+        if(stageDir.exists())
+            FileIO.rmDir(stageDir.toPath());
+
         stageDir.mkdirs();
         return stageDir;
     }
