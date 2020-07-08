@@ -1,6 +1,6 @@
-package automark.execution.download;
+package automark.stages.download;
 
-import automark.*;
+import automark.io.*;
 import automark.models.*;
 import org.jsoup.*;
 import org.jsoup.nodes.*;
@@ -133,7 +133,7 @@ public class MoodleSession implements AutoCloseable {
 
         try (InputStream bodyStream = response.bodyStream();
              OutputStream outputStream = new FileOutputStream(outputFile)) {
-            Utils.pipe(bodyStream, outputStream);
+            FileIO.pipe(bodyStream, outputStream);
         }
 
         return outputFile;

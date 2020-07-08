@@ -7,7 +7,7 @@ public class Submission {
     private final String studentName;
     private final String studentEmail;
     private final String fileURL;
-    private List<Problem> problems;
+    private final List<Problem> problems;
     private boolean isDisqualified = false;
 
     public Submission(String slug, String studentName, String studentEmail, String fileURL) {
