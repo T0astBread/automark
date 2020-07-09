@@ -41,8 +41,11 @@ public class Summaries {
                 submission.getProblems().forEach(problem -> {
                     printIndentation(out, 1);
                     out.print(problem.type);
-                    out.print(" in stage ");
-                    out.println(problem.stage.name());
+                    if(problem.stage != null) {
+                        out.print(" in stage ");
+                        out.print(problem.stage.name());
+                    }
+                    out.println();
 
                     printProblemSummary(out, problem, 2);
                 });

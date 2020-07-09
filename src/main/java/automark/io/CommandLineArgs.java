@@ -13,6 +13,7 @@ public class CommandLineArgs {
     public final String markResolvedSubmissionSlug;
     public final String markResolvedProblemIdentifier;
     public final boolean markResolvedRequalify;
+    public final List<String> markPlagiarizedSlugs;
 
     public static CommandLineArgs parse(String[] args) throws UserFriendlyException {
         ListIterator<String> iterator = List.of(args).listIterator();
@@ -23,6 +24,7 @@ public class CommandLineArgs {
         String markResolvedSubmissionSlug = null;
         String markResolvedProblemIdentifier = null;
         boolean markResolvedRequalify = false;
+        List<String> markPlagiarizedSlugs = null;
 
         // Format: [options] subcommand [subcommand positional args] [options]
         while (iterator.hasNext()) {
@@ -72,6 +74,18 @@ public class CommandLineArgs {
                     if(!iterator.hasNext())
                         throw new UserFriendlyException("mark-resolved must be followed by: <submission_slug|_>");
                     markResolvedSubmissionSlug = iterator.next();
+
+                } else if (subcommand == Subcommand.MARK_PLAGIARIZED) {
+                    markPlagiarizedSlugs = new ArrayList<>();
+
+                    while (iterator.hasNext()) {
+                        String subToken = iterator.next();
+                        if(subToken.startsWith("-")) {
+                            iterator.previous();
+                            break;
+                        }
+                        markPlagiarizedSlugs.add(subToken);
+                    }
                 }
             }
         }
@@ -83,19 +97,20 @@ public class CommandLineArgs {
             System.out.println("Info: --problem and --requalify are only effective on the mark-resolve subcommand");
         }
 
-        return new CommandLineArgs(workingDir, subcommand, rollbackStage, markResolvedSubmissionSlug, markResolvedProblemIdentifier, markResolvedRequalify);
+        return new CommandLineArgs(workingDir, subcommand, rollbackStage, markResolvedSubmissionSlug, markResolvedProblemIdentifier, markResolvedRequalify, markPlagiarizedSlugs);
     }
 
-    private CommandLineArgs(File workingDir, Subcommand subcommand, Stage rollbackStage, String markResolvedSubmissionSlug, String markResolvedProblemIdentifier, boolean markResolvedRequalify) {
+    private CommandLineArgs(File workingDir, Subcommand subcommand, Stage rollbackStage, String markResolvedSubmissionSlug, String markResolvedProblemIdentifier, boolean markResolvedRequalify, List<String> markPlagiarizedSlugs) {
         this.workingDir = workingDir;
         this.subcommand = subcommand;
         this.rollbackStage = rollbackStage;
         this.markResolvedSubmissionSlug = markResolvedSubmissionSlug;
         this.markResolvedProblemIdentifier = markResolvedProblemIdentifier;
         this.markResolvedRequalify = markResolvedRequalify;
+        this.markPlagiarizedSlugs = markPlagiarizedSlugs;
     }
 
     public enum Subcommand {
-        RUN, ROLLBACK, STATUS, MARK_RESOLVED
+        RUN, ROLLBACK, STATUS, MARK_RESOLVED, MARK_PLAGIARIZED
     }
 }

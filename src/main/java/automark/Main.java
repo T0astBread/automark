@@ -36,6 +36,9 @@ public class Main {
                         commandLineArgs.markResolvedProblemIdentifier,
                         commandLineArgs.markResolvedRequalify);
                 break;
+            case MARK_PLAGIARIZED:
+                MarkPlagiarized.run(commandLineArgs.workingDir, commandLineArgs.markPlagiarizedSlugs);
+                break;
         }
     }
 }
