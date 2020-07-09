@@ -25,14 +25,16 @@ public class MarkResolved {
         }
 
         for (Submission submission : submissionsToWorkOn) {
-            if(problemIdentifier.matches("^\\d+$")) {
-                int problemIndex = Integer.parseInt(problemIdentifier) - 1;
-                submission.getProblems().remove(problemIndex);
-            } else {
-                List<Problem> newProblems = submission.getProblems().stream()
-                        .filter(problem -> !problem.type.name().equalsIgnoreCase(problemIdentifier))
-                        .collect(Collectors.toList());
-                submission.setProblems(newProblems);
+            if(problemIdentifier != null) {
+                if (problemIdentifier.matches("^\\d+$")) {
+                    int problemIndex = Integer.parseInt(problemIdentifier) - 1;
+                    submission.getProblems().remove(problemIndex);
+                } else {
+                    List<Problem> newProblems = submission.getProblems().stream()
+                            .filter(problem -> !problem.type.name().equalsIgnoreCase(problemIdentifier))
+                            .collect(Collectors.toList());
+                    submission.setProblems(newProblems);
+                }
             }
 
             if(requalify)
