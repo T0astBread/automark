@@ -12,6 +12,9 @@ public class Status {
         Metadata.MetadataLoadingResult loadingResult = Metadata.loadLatestMetadata(workingDir);
         List<Submission> submissions = loadingResult.submissions;
 
-        Summaries.printDetailedSummary(System.out, submissions, loadingResult.lastStage);
+        if (submissions == null)
+            System.out.println("Nothing to show");
+        else
+            Summaries.printDetailedSummary(System.out, submissions, loadingResult.lastStage);
     }
 }
