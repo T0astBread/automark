@@ -50,6 +50,12 @@ public class Run {
                 System.out.println("Some submissions have new problems after this stage:");
                 System.out.println();
                 Summaries.printShortSummary(System.out, submissionsWithNewProblems);
+                System.out.println();
+                System.out.println("You can now:");
+                System.out.println("  - Roll back the stage using \"rollback " + stage.name().toLowerCase() + "\"");
+                System.out.println("  - Resolve issues manually and run \"mark-resolved\" (see mark-resolved --help)");
+                System.out.println("  - Leave the problems there and run the same command again to continue");
+                return;
             }
         }
     }
