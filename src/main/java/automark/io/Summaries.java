@@ -44,12 +44,7 @@ public class Summaries {
                     out.print(" in stage ");
                     out.println(problem.stage.name());
 
-                    if (problem.summary != null) {
-                        for (String line : problem.summary.split("\n")) {
-                            printIndentation(out, 2);
-                            out.println(line);
-                        }
-                    }
+                    printProblemSummary(out, problem, 2);
                 });
             }
 
@@ -57,10 +52,16 @@ public class Summaries {
         });
     }
 
-    public static void printPublicSummary(PrintStream out, List<Submission> submissions) {
+    public static void printIndentation(PrintStream out, int level) {
+        out.print("  ".repeat(level));
     }
 
-    private static void printIndentation(PrintStream out, int level) {
-        out.print("\t".repeat(level));
+    public static void printProblemSummary(PrintStream out, Problem problem, int indentation) {
+        if (problem.summary != null) {
+            for (String line : problem.summary.split("\n")) {
+                printIndentation(out, indentation);
+                out.println(line);
+            }
+        }
     }
 }

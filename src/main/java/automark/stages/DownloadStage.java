@@ -10,7 +10,8 @@ import java.util.*;
 import java.util.stream.*;
 
 public class DownloadStage {
-    public static List<Submission> run(File workingDir, Properties config, List<Submission> submissions) throws UserFriendlyException {
+    public static List<Submission> run(File workingDir, Properties config) throws UserFriendlyException {
+        List<Submission> submissions;
         String assignmentID = config.getProperty(Config.ASSIGNMENT_ID);
 
         try (MoodleSession moodleSession = new MoodleSession(config.getProperty(Config.MOODLE_BASE_URL))) {

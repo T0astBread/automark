@@ -3,6 +3,8 @@ package automark.io;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 public class FileIO {
 
@@ -19,6 +21,19 @@ public class FileIO {
                 .sorted(Comparator.reverseOrder())
                 .map(Path::toFile)
                 .forEach(File::delete);
+    }
+
+    public static void cpDir(Path source, Path destination) throws IOException {
+        List<File> filesInSource = Files.walk(source)
+                .map(Path::toFile)
+                .filter(file -> file.exists() && file.isFile())
+                .collect(Collectors.toList());
+        for (File file : filesInSource) {
+            Path relPath = source.relativize(file.toPath());
+            Path newFilePath = destination.resolve(relPath);
+            newFilePath.toFile().getParentFile().mkdirs();
+            Files.copy(file.toPath(), newFilePath);
+        }
     }
 
     public static void pipe(InputStream in, OutputStream out) throws IOException {

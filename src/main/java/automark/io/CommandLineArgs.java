@@ -63,7 +63,7 @@ public class CommandLineArgs {
 
                     String rollbackStageName = iterator.next();
                     try {
-                        rollbackStage = Stage.valueOf(rollbackStageName.toUpperCase());
+                        rollbackStage = Stage.valueOf(rollbackStageName.toUpperCase().replaceAll("-", "_"));
                     } catch (IllegalArgumentException e) {
                         throw new UserFriendlyException("Unknown stage in rollback subcommand " + rollbackStageName);
                     }

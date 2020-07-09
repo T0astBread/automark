@@ -51,10 +51,10 @@ public class Run {
                 System.out.println();
                 Summaries.printShortSummary(System.out, submissionsWithNewProblems);
                 System.out.println();
-                System.out.println("You can now:");
+                System.out.println("In addition to any instructions printed above, you can now:");
                 System.out.println("  - Roll back the stage using \"rollback " + stage.name().toLowerCase() + "\"");
                 System.out.println("  - Resolve issues manually and run \"mark-resolved\" (see mark-resolved --help)");
-                System.out.println("  - Leave the problems there and run the same command again to continue");
+                System.out.println("  - Ignore the problems (\"Problems\" don't always mean something is broken)");
                 return;
             }
         }
@@ -68,9 +68,23 @@ public class Run {
     ) throws UserFriendlyException {
         switch (stage) {
             case DOWNLOAD:
-                return DownloadStage.run(workingDir, config, submissions);
+                return DownloadStage.run(workingDir, config);
+            case UNZIP:
+                return UnzipStage.run(workingDir, config, submissions);
+            case EXTRACT:
+                return ExtractStage.run(workingDir, config, submissions);
+            case JPLAG:
+                return JPlagStage.run(workingDir, config, submissions);
+            case PREPARE_COMPILE:
+                return PrepareCompileStage.run(workingDir, config, submissions);
+            case COMPILE:
+                return CompileStage.run(workingDir, config, submissions);
+            case TEST:
+                return TestStage.run(workingDir, config, submissions);
+            case SUMMARY:
+                return SummaryStage.run(workingDir, config, submissions);
             default:
-                throw new RuntimeException("not implemented");
+                throw new UserFriendlyException("Invalid state: Tried to execute a stage that isn't implemented: " + stage.name());
         }
     }
 }

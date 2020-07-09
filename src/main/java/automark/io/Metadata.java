@@ -70,14 +70,29 @@ public class Metadata {
         return new File(getMetadataDir(workingDir), stage.name().toLowerCase() + ".json");
     }
 
-    public static File mkStageDir(Stage stage, File workingDir) throws IOException {
+    public static File mkStageDir(Stage stage, File workingDir) throws UserFriendlyException {
         File stageDir = new File(getDataDir(workingDir), stage.name().toLowerCase());
 
-        if(stageDir.exists())
-            FileIO.rmDir(stageDir.toPath());
+        if(stageDir.exists()) {
+            try {
+                FileIO.rmDir(stageDir.toPath());
+            } catch (IOException e) {
+                throw new UserFriendlyException("Failed to remove existing directory " + stageDir.getAbsolutePath());
+            }
+        }
 
         stageDir.mkdirs();
         return stageDir;
+    }
+
+    public static List<File> getTestFiles(File workingDir) {
+        File testsDir = new File(workingDir, "tests");
+        File[] testFiles = testsDir.listFiles();
+        return testFiles == null ? new ArrayList<>() : List.of(testFiles);
+    }
+
+    public static String getPackageNameForSubmission(Submission submission) {
+        return "automark.testbed." + submission.getSlug();
     }
 
     public static class MetadataLoadingResult {

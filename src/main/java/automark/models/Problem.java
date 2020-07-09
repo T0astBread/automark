@@ -40,19 +40,4 @@ public class Problem {
     public static Problem createdPlagiarized() {
         return new Problem(null, Type.PLAGIARIZED);
     }
-
-    public static Problem createCompilationError(List<Diagnostic<? extends JavaFileObject>> diagnostics) {
-        String summary = diagnostics.stream()
-                .map(diagnostic -> diagnostic.getMessage(null) + " at " + diagnostic.getSource().getName() + ":" + diagnostic.getLineNumber() + ":" + diagnostic.getColumnNumber())
-                .collect(Collectors.joining("\n"));
-        return new Problem(Stage.COMPILE, Type.COMPILATION_ERROR, summary);
-    }
-
-    public static Problem createTestSuiteFail(String testSuiteName) {
-        return new Problem(Stage.TEST, Type.TEST_SUITE_FAILURE, testSuiteName);
-    }
-
-    public static Problem createTestFail(String testSuiteName, String testName) {
-        return new Problem(Stage.TEST, Type.TEST_FAILURE, testSuiteName + "::" + testName);
-    }
 }
