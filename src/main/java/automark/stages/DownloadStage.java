@@ -17,9 +17,11 @@ public class DownloadStage {
         try (MoodleSession moodleSession = new MoodleSession(config.getProperty(Config.MOODLE_BASE_URL))) {
             File downloadsDir = Metadata.mkStageDir(Stage.DOWNLOAD, workingDir);
 
-            moodleSession.login(
-                    config.getProperty(Config.MOODLE_USERNAME),
-                    config.getProperty(Config.MOODLE_PASSWORD));
+            String username = config.getProperty(Config.MOODLE_USERNAME);
+            if(username == null) username = UI.prompt("Moodle username: ", false);
+            String password = config.getProperty(Config.MOODLE_PASSWORD);
+            if(password == null) password = UI.prompt("Moodle password: ", true);
+            moodleSession.login(username, password);
 
             submissions = moodleSession.listSubmissions(assignmentID);
 
