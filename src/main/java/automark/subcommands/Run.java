@@ -57,6 +57,9 @@ public class Run {
                 System.out.println("  - Ignore the problems (\"Problems\" don't always mean something is broken)");
                 return;
             }
+
+            if (stage == Stage.JPLAG)
+                return;
         }
     }
 
