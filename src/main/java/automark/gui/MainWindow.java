@@ -1,9 +1,11 @@
 package automark.gui;
 
 import automark.io.*;
+import automark.models.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class MainWindow extends JFrame {
     public static void show(CommandLineArgs args) {
@@ -47,10 +49,51 @@ public class MainWindow extends JFrame {
         stageList.setModel(stageListModel);
         innerSplitPane.setLeftComponent(stageList);
 
-        JTree submissionsTree = new JTree();
-        submissionsTree.setRootVisible(false);
-        submissionsTree.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
-        innerSplitPane.setRightComponent(submissionsTree);
+//        JTree submissionsTree = new JTree();
+//        submissionsTree.setRootVisible(false);
+//        submissionsTree.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+//        innerSplitPane.setRightComponent(submissionsTree);
+        SubmissionList submissionList = new SubmissionList();
+        submissionList.setData(List.of(
+                new Submission("test_student_3", "Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("t_tjlsjjtljsll_kfjkfjklj_5", "Third STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "https://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe"),
+                new Submission("fjlklls_4", "Other Test STUDENT", "testtudent@email.com", "htts://fjeksfjeksjfkleja.jfeis.f-fje-/fjkesf-esfe")
+
+                ));
+        JScrollPane submissionsScrollPane = new JScrollPane(submissionList);
+        submissionsScrollPane.setAutoscrolls(true);
+        innerSplitPane.setRightComponent(submissionsScrollPane);
 
         JTextArea outputField = new JTextArea();
         outputField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
@@ -67,20 +110,20 @@ public class MainWindow extends JFrame {
         scrollPane.setMinimumSize(new Dimension(0, 0));
         outerSplitPane.setBottomComponent(scrollPane);
 
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep((int) (Math.random() * 100));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                int len = (int) (Math.random() * 20);
-                for (int j = 0; j < len; j++) {
-                    outputField.append("lorem ");
-                }
-                outputField.append("\n");
-                outputField.setCaretPosition(outputField.getDocument().getLength());
-            }
-        }).start();
+//        new Thread(() -> {
+//            while (true) {
+//                try {
+//                    Thread.sleep((int) (Math.random() * 100));
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                int len = (int) (Math.random() * 20);
+//                for (int j = 0; j < len; j++) {
+//                    outputField.append("lorem ");
+//                }
+//                outputField.append("\n");
+//                outputField.setCaretPosition(outputField.getDocument().getLength());
+//            }
+//        }).start();
     }
 }
