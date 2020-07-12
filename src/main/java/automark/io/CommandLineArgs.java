@@ -117,5 +117,6 @@ public class CommandLineArgs {
         MARK_RESOLVED,
         MARK_PLAGIARIZED,
         BYPASS_DOWNLOAD,
+        GUI,
     }
 }

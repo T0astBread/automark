@@ -1,5 +1,6 @@
 package automark;
 
+import automark.gui.*;
 import automark.io.*;
 import automark.subcommands.*;
 
@@ -41,6 +42,9 @@ public class Main {
                 break;
             case BYPASS_DOWNLOAD:
                 BypassDownload.run(commandLineArgs.workingDir);
+                break;
+            case GUI:
+                MainWindow.show(commandLineArgs);
                 break;
         }
     }
