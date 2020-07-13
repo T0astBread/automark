@@ -21,6 +21,7 @@ const PROBLEM_TYPES = [
 
 let selectedStage = null
 let visibleStage = null
+let lastCompletedStage = null
 
 const updateHash = () => {
     const newHash = `#${selectedStage ? selectedStage.name : ""}`
@@ -28,7 +29,7 @@ const updateHash = () => {
         location.hash = newHash
 }
 
-const renderStages = lastStage => {
+const renderStages = () => {
     let done = true
     let _lastStage = null
     const listElement = document.createElement("ul")
@@ -46,11 +47,12 @@ const renderStages = lastStage => {
         element.addEventListener("click", evt => {
             console.log("Clicked", stage)
             selectedStage = stage
+            renderStages()
             renderCurrentSubmissions()
             updateHash()
         })
 
-        if (stage.name === lastStage) {
+        if (stage.name === lastCompletedStage) {
             done = false
             _lastStage = stage
         }
@@ -141,7 +143,8 @@ const renderProblemTd = (problemType, submission) => {
 (async () => {
     const metadata = await fetch("/latest-metadata").then(r => r.json())
     console.log(metadata)
-    selectedStage = renderStages(metadata.lastStage)
+    lastCompletedStage = metadata.lastStage
+    selectedStage = renderStages()
     renderSubmissions(metadata.submissions, selectedStage)
     updateHash()
 
@@ -151,6 +154,7 @@ const renderProblemTd = (problemType, submission) => {
         const newSelectedStage = STAGES.find(s => s.name === stageName)
         if (newSelectedStage != null)
             selectedStage = newSelectedStage
+        renderStages()
         renderCurrentSubmissions()
     })
 })()
