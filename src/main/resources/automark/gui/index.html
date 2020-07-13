@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Automark</title>
+</head>
+<body>
+<div id="toolbar">
+    <button>📂 Open</button>
+    <button>▶️ Run</button>
+    <button>⏮️ Rollback</button>
+    <div class="spacer"></div>
+    <h1>Automark</h1>
+</div>
+<div id="columns-container">
+    <div id="stages">
+        <ul>
+            <li class="done">Download</li>
+            <li class="done">Unzip</li>
+            <li class="done">Extract</li>
+            <li class="done">JPlag</li>
+            <li class="working">Prepare-Compile</li>
+            <li>Compile</li>
+            <li>Test</li>
+            <li>Summary</li>
+        </ul>
+    </div>
+    <div id="submissions">
+        <table>
+            <thead>
+            <tr>
+                <th rowspan="2"></th>
+                <th rowspan="2">🗑️</th>
+                <th rowspan="2">Name</th>
+                <th rowspan="2">Email</th>
+                <th colspan="7">Problems</th>
+            </tr>
+            <tr>
+                <th>E</th>
+                <th>I</th>
+                <th>N</th>
+                <th>P</th>
+                <th>C</th>
+                <th>TS</th>
+                <th>T</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Test STUDENT</td>
+                <td>teststudent@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td>Studen TEST</td>
+                <td>test1234@tmail.com</td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+                <td><input type="checkbox" value="false"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <pre id="terminal">
+<code>Automark v0.0.0
+
+Output will appear here
+
+
+</code>
+    </pre>
+</div>
+</body>
+</html>

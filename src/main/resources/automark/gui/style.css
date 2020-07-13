@@ -1,0 +1,198 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: .5em;
+    margin: 0;
+	background: #eee;
+	font-family: monospace;
+	font-size: 1.2em;
+}
+
+#toolbar {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    flex: 0 0 auto;
+    padding-bottom: .5em;
+}
+
+#toolbar button {
+    margin-right: .25em;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+h1 {
+    padding: 0;
+    margin: 0;
+    font-size: 1.4em;
+    align-self: center;
+}
+
+#columns-container {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+#columns-container > * {
+    flex-basis: 0;
+    margin: 0;
+    overflow: auto;
+}
+
+#columns-container > :nth-child(2) {
+    margin: 0 .5em;
+}
+
+#stages {
+    flex-grow: 0;
+    flex-basis: 15em;
+    background-color: white;
+}
+
+#stages ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+#stages ul li {
+    position: relative;
+    line-height: 2em;
+}
+
+#stages ul li::before {
+    content: "✔️";
+    position: relative;
+    display: inline-block;
+    visibility: hidden;
+    width: 1em;
+    height: 1em;
+    margin-left: .2em;
+    margin-right: .4em;
+    border-radius: 50%;
+    line-height: 1em;
+    text-align: center;
+    z-index: 2;
+    background-color: #5dd496;
+}
+#stages ul li.done,
+#stages ul li.working {
+
+    background-color: #ddd;
+}
+
+#stages ul li.done::before,
+#stages ul li.working::before {
+    visibility: visible;
+}
+
+#stages ul li.working::before {
+    content: "🗘";
+    background-color: #ffd900;
+}
+
+#stages ul li.done + .done::after,
+#stages ul li.done + .working::after {
+    content: " ";
+    display: inline-block;
+    position: absolute;
+    left: .4em;
+    top: -1em;
+    width: .25em;
+    height: 2em;
+    margin-left: .2em;
+    margin-right: .4em;
+    text-align: center;
+    z-index: 1;
+    background-color: #5dd496;
+}
+
+#stages ul li.done + .working::after {
+    background-color: #ffd900;
+}
+
+#stages ul li:hover {
+    background-color: #b4ebff;
+}
+
+#submissions {
+    flex-grow: 4;
+    background-color: white;
+}
+
+#submissions table {
+    /*border-collapse: collapse;*/
+}
+
+#submissions thead {
+    background: #ddd;
+}
+
+#submissions tbody tr:nth-child(2n) {
+    background-color: #e6e6e6;
+}
+
+#submissions th, #submissions td {
+    border: none;
+}
+
+#submissions thead tr:nth-child(2) th:nth-child(1),
+#submissions td:nth-child(5) {
+    background-color: #f5627f;
+}
+
+#submissions thead tr:nth-child(2) th:nth-child(2),
+#submissions td:nth-child(6) {
+    background-color: #f5abb9;
+}
+
+#submissions thead tr:nth-child(2) th:nth-child(3),
+#submissions td:nth-child(7) {
+    background-color: #ccc;
+}
+
+#submissions thead tr:nth-child(2) th:nth-child(4),
+#submissions td:nth-child(8) {
+    background-color: #ffd97f;
+}
+
+#submissions thead tr:nth-child(2) th:nth-child(5),
+#submissions td:nth-child(9) {
+    background-color: #5dd496;
+}
+
+#submissions thead tr:nth-child(2) th:nth-child(6),
+#submissions td:nth-child(10) {
+    background-color: #52d1ff;
+}
+
+#submissions thead tr:nth-child(2) th:nth-child(7),
+#submissions td:nth-child(11) {
+    background-color: #b4ebff;
+}
+
+/*
+#submissions thead tr:first-child th:nth-child(2),
+#submissions td:nth-child(2) {
+    background-color: #ccc;
+}
+*/
+
+#terminal {
+    word-break: break-all;
+    flex-grow: 3;
+    padding: 1em;
+    background-color: #666666;
+    color: white;
+}
