@@ -111,6 +111,11 @@ public class CommandLineArgs {
     }
 
     public enum Subcommand {
-        RUN, ROLLBACK, STATUS, MARK_RESOLVED, MARK_PLAGIARIZED
+        RUN,
+        ROLLBACK,
+        STATUS,
+        MARK_RESOLVED,
+        MARK_PLAGIARIZED,
+        BYPASS_DOWNLOAD,
     }
 }

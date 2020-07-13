@@ -33,6 +33,10 @@ public class Problem {
         return new Problem(stage, Type.EXCEPTION, stackTrace);
     }
 
+    public static Problem createNotSubmittedProblem() {
+        return new Problem(Stage.DOWNLOAD, Problem.Type.NOT_SUBMITTED);
+    }
+
     public static Problem createInvalidSubmissionFile(Stage stage, String summary) {
         return new Problem(stage, Type.INVALID_SUBMISSION_FILE, summary);
     }

@@ -39,6 +39,9 @@ public class Main {
             case MARK_PLAGIARIZED:
                 MarkPlagiarized.run(commandLineArgs.workingDir, commandLineArgs.markPlagiarizedSlugs);
                 break;
+            case BYPASS_DOWNLOAD:
+                BypassDownload.run(commandLineArgs.workingDir);
+                break;
         }
     }
 }

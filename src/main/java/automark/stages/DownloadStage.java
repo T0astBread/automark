@@ -30,7 +30,7 @@ public class DownloadStage {
 
             for (Submission submission : submissions) {
                 if (submission.getFileURL() == null) {
-                    submission.addProblem(createNotSubmittedProblem());
+                    submission.addProblem(Problem.createNotSubmittedProblem());
                     submission.setDisqualified(true);
                 } else {
                     try {
@@ -53,9 +53,5 @@ public class DownloadStage {
         return submissions.stream()
                 .filter(submission -> !teachers.contains(submission.getStudentEmail()))
                 .collect(Collectors.toList());
-    }
-
-    private static Problem createNotSubmittedProblem() {
-        return new Problem(Stage.DOWNLOAD, Problem.Type.NOT_SUBMITTED);
     }
 }
