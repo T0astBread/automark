@@ -66,12 +66,22 @@ h1 {
     list-style: none;
 }
 
-#stages ul li {
+#stages ul li a {
+    display: inline-block;
+    width: 100%;
     position: relative;
     line-height: 2em;
 }
 
-#stages ul li::before {
+#stages ul li a,
+#stages ul li a:hover,
+#stages ul li a:active,
+#stages ul li a:visited {
+    color: black;
+    text-decoration: none;
+}
+
+#stages ul li a::before {
     content: "✔️";
     position: relative;
     display: inline-block;
@@ -86,24 +96,23 @@ h1 {
     z-index: 2;
     background-color: #5dd496;
 }
-#stages ul li.done,
-#stages ul li.working {
 
+#stages ul li.selected a {
     background-color: #ddd;
 }
 
-#stages ul li.done::before,
-#stages ul li.working::before {
+#stages ul li.done a::before,
+#stages ul li.working a::before {
     visibility: visible;
 }
 
-#stages ul li.working::before {
+#stages ul li.working a::before {
     content: "🗘";
     background-color: #ffd900;
 }
 
-#stages ul li.done + .done::after,
-#stages ul li.done + .working::after {
+#stages ul li.done + .done a::after,
+#stages ul li.done + .working a::after {
     content: " ";
     display: inline-block;
     position: absolute;
@@ -118,11 +127,11 @@ h1 {
     background-color: #5dd496;
 }
 
-#stages ul li.done + .working::after {
+#stages ul li.done + .working a::after {
     background-color: #ffd900;
 }
 
-#stages ul li:hover {
+#stages ul li a:hover {
     background-color: #b4ebff;
 }
 

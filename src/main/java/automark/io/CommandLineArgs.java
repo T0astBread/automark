@@ -14,6 +14,8 @@ public class CommandLineArgs {
     public final String markResolvedProblemIdentifier;
     public final boolean markResolvedRequalify;
     public final List<String> markPlagiarizedSlugs;
+    public final boolean enableInsecureDebugMechanisms;
+    public final boolean openBrowser;
 
     public static CommandLineArgs parse(String[] args) throws UserFriendlyException {
         ListIterator<String> iterator = List.of(args).listIterator();
@@ -25,6 +27,8 @@ public class CommandLineArgs {
         String markResolvedProblemIdentifier = null;
         boolean markResolvedRequalify = false;
         List<String> markPlagiarizedSlugs = null;
+        boolean enableInsecureDebugMechanisms = false;
+        boolean openBrowser = true;
 
         // Format: [options] subcommand [subcommand positional args] [options]
         while (iterator.hasNext()) {
@@ -44,9 +48,15 @@ public class CommandLineArgs {
                 markResolvedRequalify = true;
 
             } else if ("--problem".equals(token)) {
-                if(!iterator.hasNext())
+                if (!iterator.hasNext())
                     throw new UserFriendlyException("--problem must by followd by <problem_type|problem_index>");
                 markResolvedProblemIdentifier = iterator.next();
+
+            } else if ("--enable-insecure-debug-mechanisms".equals(token)) {
+                enableInsecureDebugMechanisms = true;
+
+            } else if ("--no-open-browser".equals(token)) {
+                openBrowser = false;
 
             } else if (subcommand != null) {
                 throw new UserFriendlyException("Subcommand has already been specified as " + subcommand.name() + "(tried to specify again as " + token + ")");
@@ -71,7 +81,7 @@ public class CommandLineArgs {
                     }
 
                 } else if (subcommand == Subcommand.MARK_RESOLVED) {
-                    if(!iterator.hasNext())
+                    if (!iterator.hasNext())
                         throw new UserFriendlyException("mark-resolved must be followed by: <submission_slug|_>");
                     markResolvedSubmissionSlug = iterator.next();
 
@@ -80,7 +90,7 @@ public class CommandLineArgs {
 
                     while (iterator.hasNext()) {
                         String subToken = iterator.next();
-                        if(subToken.startsWith("-")) {
+                        if (subToken.startsWith("-")) {
                             iterator.previous();
                             break;
                         }
@@ -93,14 +103,36 @@ public class CommandLineArgs {
         if (subcommand == null)
             subcommand = Subcommand.RUN;
 
-        if(subcommand != Subcommand.MARK_RESOLVED && (markResolvedProblemIdentifier != null || markResolvedRequalify)) {
+        if (subcommand != Subcommand.MARK_RESOLVED && (markResolvedProblemIdentifier != null || markResolvedRequalify)) {
             System.out.println("Info: --problem and --requalify are only effective on the mark-resolve subcommand");
         }
 
-        return new CommandLineArgs(workingDir, subcommand, rollbackStage, markResolvedSubmissionSlug, markResolvedProblemIdentifier, markResolvedRequalify, markPlagiarizedSlugs);
+        if (subcommand != Subcommand.GUI && !openBrowser) {
+            System.out.println("Info: --no-open-browser is only effective on the gui subcommand");
+        }
+
+        return new CommandLineArgs(
+                workingDir,
+                subcommand,
+                rollbackStage,
+                markResolvedSubmissionSlug,
+                markResolvedProblemIdentifier,
+                markResolvedRequalify,
+                markPlagiarizedSlugs,
+                enableInsecureDebugMechanisms,
+                openBrowser);
     }
 
-    private CommandLineArgs(File workingDir, Subcommand subcommand, Stage rollbackStage, String markResolvedSubmissionSlug, String markResolvedProblemIdentifier, boolean markResolvedRequalify, List<String> markPlagiarizedSlugs) {
+    private CommandLineArgs(
+            File workingDir,
+            Subcommand subcommand,
+            Stage rollbackStage,
+            String markResolvedSubmissionSlug,
+            String markResolvedProblemIdentifier,
+            boolean markResolvedRequalify,
+            List<String> markPlagiarizedSlugs,
+            boolean enableInsecureDebugMechanisms,
+            boolean openBrowser) {
         this.workingDir = workingDir;
         this.subcommand = subcommand;
         this.rollbackStage = rollbackStage;
@@ -108,6 +140,8 @@ public class CommandLineArgs {
         this.markResolvedProblemIdentifier = markResolvedProblemIdentifier;
         this.markResolvedRequalify = markResolvedRequalify;
         this.markPlagiarizedSlugs = markPlagiarizedSlugs;
+        this.enableInsecureDebugMechanisms = enableInsecureDebugMechanisms;
+        this.openBrowser = openBrowser;
     }
 
     public enum Subcommand {
