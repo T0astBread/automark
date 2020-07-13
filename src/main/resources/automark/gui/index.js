@@ -39,7 +39,7 @@ const renderStages = () => {
 
         if (done)
             element.classList.add("done")
-        if (selectedStage && selectedStage.name === stage.name)
+        if ((selectedStage ? selectedStage.name : lastCompletedStage) === stage.name)
             element.classList.add("selected")
 
         listElement.appendChild(element)
