@@ -33,6 +33,12 @@ body {
     margin-right: .25em;
 }
 
+#toolbar span {
+    align-self: center;
+    margin-left: .25em;
+    margin-right: 1em;
+}
+
 .spacer {
     flex-grow: 1;
 }

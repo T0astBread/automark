@@ -8,20 +8,20 @@ import com.google.gson.*;
 import spark.*;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.*;
-import java.util.stream.*;
 
 public class GUI {
     public static void start(CommandLineArgs commandLineArgs) {
         final Gson GSON = new Gson();
         final String MIME_JSON = "application/json";
 
-        final File workingDir = commandLineArgs.workingDir;
+        AtomicReference<File> workingDir = new AtomicReference<>(commandLineArgs.workingDir);
 
         final String initiationSecret = generateSecret();
         if(commandLineArgs.enableInsecureDebugMechanisms)
@@ -36,7 +36,8 @@ public class GUI {
 
         Spark.staticFiles.location("/automark/gui");
 
-        Spark.webSocket("/", new RunWebSocketHandler(workingDir, permanentSecret, commandLineArgs));
+        RunWebSocketHandler webSocketHandler = new RunWebSocketHandler(workingDir.get(), permanentSecret, commandLineArgs);
+        Spark.webSocket("/", webSocketHandler);
 
         if (!commandLineArgs.enableInsecureDebugMechanisms) {
             // Doesn't apply to static files
@@ -66,7 +67,7 @@ public class GUI {
         Spark.get("/latest-metadata", (request, response) -> {
             response.type(MIME_JSON);
 
-            Metadata.MetadataLoadingResult result = Metadata.loadLatestMetadata(workingDir);
+            Metadata.MetadataLoadingResult result = Metadata.loadLatestMetadata(workingDir.get());
             return result;
         }, GSON::toJson);
 
@@ -83,7 +84,7 @@ public class GUI {
                 return "Unknown stage";
             }
 
-            List<Submission> submissions = Metadata.loadSubmissions(Metadata.getMetadataFile(workingDir, stage));
+            List<Submission> submissions = Metadata.loadSubmissions(Metadata.getMetadataFile(workingDir.get(), stage));
             return submissions;
         }, GSON::toJson);
 
@@ -93,7 +94,7 @@ public class GUI {
 
             Map<String, List<Submission>> submissions = new HashMap<>();
             for (Stage stage : Stage.values()) {
-                File submissionFile = Metadata.getMetadataFile(workingDir, stage);
+                File submissionFile = Metadata.getMetadataFile(workingDir.get(), stage);
                 if (submissionFile.exists()) {
                     submissions.put(stage.name(), Metadata.loadSubmissions(submissionFile));
                 } else {
@@ -118,7 +119,7 @@ public class GUI {
             }
 
             try {
-                Rollback.run(workingDir, targetStage);
+                Rollback.run(workingDir.get(), targetStage);
             } catch (UserFriendlyException e) {
                 e.printStackTrace();
                 response.status(500);
@@ -127,6 +128,34 @@ public class GUI {
 
             return "";
         }, GSON::toJson);
+
+
+        Spark.get("/working-dir", (request, response) -> workingDir.get().getName());
+
+
+        Spark.post("/working-dir", (request, response) -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(workingDir.get());
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.setFileFilter(new FileFilter() {
+                @Override
+                public boolean accept(File file) {
+                    return file.isDirectory();
+                }
+
+                @Override
+                public String getDescription() {
+                    return "Directories";
+                }
+            });
+
+            if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                workingDir.set(fileChooser.getSelectedFile());
+                webSocketHandler.setWorkingDir(workingDir.get());
+            }
+            return workingDir.get().getName();
+        });
 
 
         if(commandLineArgs.openBrowser) {

@@ -37,6 +37,7 @@ class App extends Component {
     constructor() {
         super()
         this.state = {
+            workingDir: "",
             selectedStage: stageFromHash(),
             runWebSocket: null,
             submissionsData: {},
@@ -44,6 +45,7 @@ class App extends Component {
         this.terminalRef = createRef()
 
         this.loadData()
+            .then(() => this.loadWorkingDir())
 
         window.addEventListener("hashchange", () => {
             const selectedStage = stageFromHash()
@@ -56,13 +58,42 @@ class App extends Component {
         })
     }
 
+    async loadWorkingDir() {
+        const response = await fetch("/working-dir")
+        const text = await response.text()
+        console.log(text)
+        if (response.status !== 200) {
+            alert(text)
+        }
+        this.setState({
+            ...this.state,
+            workingDir: text,
+        })
+    }
+
+    async chooseWorkingDir() {
+        const response = await fetch("/working-dir", {
+            method: "POST"
+        })
+        const text = await response.text()
+        console.log(text)
+        if (response.status !== 200) {
+            alert(text)
+        }
+        this.setState({
+            ...this.state,
+            workingDir: text,
+        })
+        await this.loadData(true)
+    }
+
     async loadData(jumpToLastSuccessful) {
-        const data = await fetch("/data").then(r => r.json())
-        console.log(data)
+        const submissionsData = await fetch("/data").then(r => r.json())
+        console.log(submissionsData)
 
         this.setState({
             ...this.state,
-            submissionsData: data,
+            submissionsData,
         })
     }
 
@@ -149,6 +180,7 @@ class App extends Component {
 
     render() {
         const {
+            workingDir,
             runWebSocket,
             selectedStage,
             submissionsData,
@@ -162,10 +194,12 @@ class App extends Component {
         let lastStageWasCompleted = false
 
         return html`
+            <title>${workingDir} - Automark</title>
             <div id="toolbar">
-                <button disabled="${isRunning}">
+                <button onClick="${() => this.chooseWorkingDir()}" disabled="${isRunning}">
                     <span class="symbol">📂</span> Open
                 </button>
+                <span>${workingDir}</span>
                 <button onClick="${() => this.startRun()}" disabled="${isRunning}">
                     <span class="symbol">▶</span>️ Run
                 </button>
