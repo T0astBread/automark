@@ -1,3 +1,6 @@
+import { h, Component, render } from "/preact-10.4.6.min.js"
+import htm from "/htm-3.0.4.min.js"
+
 const STAGES = [
     {name: "DOWNLOAD", niceName: "Download"},
     {name: "UNZIP", niceName: "Unzip"},
@@ -19,208 +22,151 @@ const PROBLEM_TYPES = [
     "TEST_FAILURE",
 ]
 
-const rollbackButton = document.getElementById("rollback")
 
-let selectedStage = null
-let visibleStage = null
-let lastCompletedStage = null
+const stageFromName = stageName => STAGES.find(s => s.name === stageName)
 
-const updateHash = () => {
-    const newHash = `#${selectedStage ? selectedStage.name : ""}`
-    if (location.hash !== newHash)
-        location.hash = newHash
+const stageFromHash = () => stageFromName(location.hash.substr(1))
+
+const getLastCompletedIndex = lastCompletedStage => {
+    for (let i = 0; i < STAGES.length; i++) {
+        const stage = STAGES[i]
+        if (stage === lastCompletedStage)
+            return i
+    }
+    return -1
 }
 
-const renderStages = () => {
-    let done = true
-    const listElement = document.createElement("ul")
-    STAGES.forEach(stage => {
-        const element = document.createElement("li")
-        element.innerHTML = `<a href="#${stage.name}">${stage.niceName}</a>`
 
-        if (done)
-            element.classList.add("done")
-        if ((selectedStage ? selectedStage.name : lastCompletedStage) === stage.name)
-            element.classList.add("selected")
+// Initialize htm with Preact
+const html = htm.bind(h)
 
-        stage.done = done
+class App extends Component {
+    constructor() {
+        super()
+        this.state = {
+            selectedStage: stageFromHash(),
+            runWebSocket: null,
+            submissionsData: {},
+            terminalText: [
+                "Automark v0.0.0",
+                "",
+                "Output will appear here",
+                "",
+                "",
+            ]
+        }
 
-        listElement.appendChild(element)
+        this.loadData()
 
-
-        element.addEventListener("click", evt => {
-            console.log("Clicked", stage)
-            selectedStage = stage
-            updateToolbarButtons()
-            renderStages()
-            renderCurrentSubmissions()
-            updateHash()
+        window.addEventListener("hashchange", () => {
+            const selectedStage = stageFromHash()
+            if (selectedStage != null) {
+                this.setState({
+                    ...this.state,
+                    selectedStage,
+                })
+            }
         })
-
-
-        if (lastCompletedStage && stage.name === lastCompletedStage.name)
-            done = false
-    })
-
-    const oldListElement = document.querySelector("#stages ul")
-    const stagesElement = oldListElement.parentElement
-    stagesElement.removeChild(oldListElement)
-    stagesElement.appendChild(listElement)
-}
-
-const renderSubmissions = async (submissions, stage) => {
-    if (visibleStage && stage && visibleStage.name === stage.name)
-        return
-
-    const submissionsTable = document.querySelector("#submissions table")
-    const errorStageNotCompleted = document.getElementById("submissions-error-stage-not-completed")
-
-    const hide = elem => elem.classList.add("hidden")
-    const show = elem => elem.classList.remove("hidden")
-
-    if (stage.done) {
-        show(submissionsTable)
-        hide(errorStageNotCompleted)
-
-        const submissionsTbody = document.querySelector("#submissions tbody")
-        submissionsTbody.innerHTML = ""
-        submissions
-            .map(renderSubmission)
-            .forEach(submissionElem => submissionsTbody.appendChild(submissionElem))
-    } else {
-        hide(submissionsTable)
-        show(errorStageNotCompleted)
     }
 
-    visibleStage = stage
-}
+    async loadData() {
+        const data = await fetch("/data").then(r => r.json())
+        console.log(data)
 
-const renderCurrentSubmissions = async () => {
-    if (selectedStage.done) {
-        const submissions = await fetch(`/submissions?stageName=${selectedStage.name}`).then(r => r.json())
-        console.log("Rendering for stage", selectedStage ? selectedStage.name : selectedStage, submissions)
-        renderSubmissions(submissions, selectedStage)
-    } else {
-        renderSubmissions(null, selectedStage)
+        this.setState({
+            ...this.state,
+            submissionsData: data,
+        })
+    }
+
+    render() {
+        const {
+            runWebSocket,
+            terminalText,
+            selectedStage,
+            submissionsData,
+        } = this.state
+        const isRunning = runWebSocket != null
+
+        const selectedSubmissions = selectedStage == null ? null : submissionsData[selectedStage.name]
+
+        // see #1
+        let lastStageWasCompleted = false
+
+        return html`
+            <div id="toolbar">
+                <button><span class="symbol">📂</span> Open</button>
+                <button><span class="symbol">▶</span>️ Run</button>
+                <button id="rollback"><span class="symbol">⬅️</span>️ Rollback</button>
+                <div class="spacer"></div>
+                <h1>Automark</h1>
+            </div>
+            <div id="columns-container">
+                <div id="stages">
+                    <ul>
+                        ${STAGES.map(stage => {
+                            const data = submissionsData[stage.name]
+                            const isCompleted = data != null
+                            // here is #1
+                            const isWorking = isRunning && !isCompleted && lastStageWasCompleted
+                            const isSelected = selectedStage === stage
+
+                            lastStageWasCompleted = isCompleted
+
+                            return html`
+                                <li class="${
+                                    isCompleted ? "done" : ""} ${
+                                    isWorking ? "working" : ""} ${
+                                    isSelected ? "selected" : ""}">
+                                    <a href="#${stage.name}">${stage.niceName}</a>
+                                </li>
+                            `
+                        })}
+                    </ul>
+                </div>
+                <div id="submissions">
+                    <table class="${selectedSubmissions == null ? "hidden" : ""}">
+                        <thead>
+                        <tr>
+                            <th rowspan="2"></th>
+                            <th rowspan="2">🗑️</th>
+                            <th rowspan="2">Name</th>
+                            <th rowspan="2">Email</th>
+                            <th colspan="7">Problems</th>
+                        </tr>
+                        <tr>
+                            <th>E</th>
+                            <th>I</th>
+                            <th>N</th>
+                            <th>P</th>
+                            <th>C</th>
+                            <th>TS</th>
+                            <th>T</th>
+                        </tr>
+                        </thead>
+                        <tbody>${
+                            selectedSubmissions == null ? null : selectedSubmissions.map(submission => html`
+                                <tr>
+                                    <td><input type="checkbox" checked="${false}"/></td>
+                                    <td><input type="checkbox" checked="${submission.isDisqualified}"/></td>
+                                    <td>${submission.studentName}</td>
+                                    <td>${submission.studentEmail}</td>
+                                    ${PROBLEM_TYPES.map(problemType => (
+                                        html`<td><input type="checkbox" checked="${submission.problems.some(p => p.type === problemType)}"/></td>`
+                                    ))}
+                                </tr>
+                            `)
+                        }</tbody>
+                    </table>
+                    <div class="submissions-error ${selectedSubmissions != null ? "hidden" : ""}" id="submissions-error-stage-not-completed">
+                        <div class="symbol">⚠️</div>
+                        <div>Selected stage has not been completed yet</div>
+                    </div>
+                </div>
+                <pre id="terminal"><code>${terminalText.map(line => `${line}\n`)}</code></pre>
+            </div>
+        `
     }
 }
 
-/*<tr>
-    <td><input type="checkbox" value="false"></td>
-    <td><input type="checkbox" value="false"></td>
-    <td>Studen TEST</td>
-    <td>test1234@tmail.com</td>
-    <td><input type="checkbox" value="false"></td>
-    <td><input type="checkbox" value="false"></td>
-    <td><input type="checkbox" value="false"></td>
-    <td><input type="checkbox" value="false"></td>
-    <td><input type="checkbox" value="false"></td>
-    <td><input type="checkbox" value="false"></td>
-    <td><input type="checkbox" value="false"></td>
-</tr>*/
-const renderSubmission = submission => {
-    const tr = document.createElement("tr")
-
-    const expandTd = document.createElement("td")
-    tr.appendChild(expandTd)
-    const expandInput = document.createElement("input")
-    expandInput.setAttribute("type", "checkbox")
-    expandInput.checked = false
-    expandTd.appendChild(expandInput)
-
-    const disqualifiedTd = document.createElement("td")
-    tr.appendChild(disqualifiedTd)
-    const disqualifiedInput = document.createElement("input")
-    disqualifiedInput.setAttribute("type", "checkbox")
-    disqualifiedInput.checked = submission.isDisqualified
-    disqualifiedTd.appendChild(disqualifiedInput)
-
-    const nameTd = document.createElement("td")
-    tr.appendChild(nameTd)
-    nameTd.innerText = submission.studentName
-
-    const emailTd = document.createElement("td")
-    tr.appendChild(emailTd)
-    emailTd.innerText = submission.studentEmail
-
-    PROBLEM_TYPES.forEach(problemType => {
-        tr.appendChild(renderProblemTd(problemType, submission))
-    })
-
-    return tr
-}
-
-const renderProblemTd = (problemType, submission) => {
-    const isPresent = submission.problems.some(p => p.type === problemType)
-
-    const problemTd = document.createElement("td")
-    const problemInput = document.createElement("input")
-    problemInput.setAttribute("type", "checkbox")
-    problemInput.checked = isPresent
-    problemTd.appendChild(problemInput)
-    return problemTd
-}
-
-const rollback = async () => {
-    console.log("rollback", selectedStage)
-    const response = await fetch(`/rollback?targetStageName=${selectedStage.name}`, {
-        method: "POST"
-    })
-    const text = await response.text()
-    console.log(text)
-    if (response.status !== 200) {
-        alert(text)
-    }
-    await reloadMetadata(true)
-}
-
-const reloadMetadata = async jumpToLastCompleted => {
-    if (!jumpToLastCompleted)
-        updateSelectedStageFromHash()
-
-    const metadata = await fetch("/latest-metadata").then(r => r.json())
-    console.log(metadata)
-
-    lastCompletedStage = stageFromName(metadata.lastStage)
-    console.log(lastCompletedStage)
-    if (selectedStage == null || jumpToLastCompleted)
-        selectedStage = lastCompletedStage
-
-    renderStages()
-    renderSubmissions(metadata.submissions, selectedStage)
-    updateHash()
-    updateToolbarButtons()
-}
-
-const updateSelectedStageFromHash = () => {
-    const stageName = location.hash.substr(1)
-    const newSelectedStage = stageFromName(stageName)
-    if (newSelectedStage != null)
-        selectedStage = newSelectedStage
-}
-
-const updateToolbarButtons = () => {
-    rollbackButton.disabled = selectedStage == null || !selectedStage.done
-}
-
-const stageFromName = stageName =>
-    stageName ? STAGES.find(s => s.name === stageName) : null
-
-;(async () => {
-//    const metadata = await fetch("/latest-metadata").then(r => r.json())
-//    console.log(metadata)
-//    lastCompletedStage = metadata.lastStage
-//    selectedStage = renderStages()
-//    renderSubmissions(metadata.submissions, selectedStage)
-//    updateHash()
-    await reloadMetadata()
-
-    window.addEventListener("hashchange", () => {
-        console.log("hashchange")
-        updateSelectedStageFromHash()
-        renderStages()
-        renderCurrentSubmissions()
-    })
-
-    rollbackButton.addEventListener("click", rollback)
-})()
+render(html`<${App}/>`, document.body)

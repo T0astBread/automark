@@ -3,66 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
-    <script defer src="index.js"></script>
+    <script defer type="module" src="index.js"></script>
     <title>Automark</title>
 </head>
 <body>
-<div id="toolbar">
-    <button><span class="symbol">📂</span> Open</button>
-    <button><span class="symbol">▶</span>️ Run</button>
-    <button id="rollback"><span class="symbol">⬅️</span>️ Rollback</button>
-    <div class="spacer"></div>
-    <h1>Automark</h1>
-</div>
-<div id="columns-container">
-    <div id="stages">
-        <ul>
-            <li class="done">Download</li>
-            <li class="done">Unzip</li>
-            <li class="done">Extract</li>
-            <li class="done">JPlag</li>
-            <li class="working">Prepare-Compile</li>
-            <li>Compile</li>
-            <li>Test</li>
-            <li>Summary</li>
-        </ul>
-    </div>
-    <div id="submissions">
-        <table>
-            <thead>
-            <tr>
-                <th rowspan="2"></th>
-                <th rowspan="2">🗑️</th>
-                <th rowspan="2">Name</th>
-                <th rowspan="2">Email</th>
-                <th colspan="7">Problems</th>
-            </tr>
-            <tr>
-                <th>E</th>
-                <th>I</th>
-                <th>N</th>
-                <th>P</th>
-                <th>C</th>
-                <th>TS</th>
-                <th>T</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <div class="submissions-error" id="submissions-error-stage-not-completed">
-            <div class="symbol">⚠️</div>
-            <div>Selected stage has not been completed yet</div>
-        </div>
-    </div>
-    <pre id="terminal">
-<code>Automark v0.0.0
-
-Output will appear here
-
-
-</code>
-    </pre>
-</div>
 </body>
 </html>

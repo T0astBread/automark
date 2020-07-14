@@ -11,6 +11,13 @@ import java.util.stream.*;
 
 public class Run {
     public static void run(File workingDir) throws UserFriendlyException {
+        run(workingDir, false);
+    }
+
+    /**
+     * @return should call again?
+     */
+    public static boolean run(File workingDir, boolean stopAfterOneStage) throws UserFriendlyException {
         Properties config = Config.loadConfig(workingDir);
 
         List<String> missingRequiredProperties = Config.getMissingRequiredProperties(config);
@@ -26,7 +33,7 @@ public class Run {
         if (loadingResult.hasGoneThroughAllStages) {
             System.out.println("All stages done!");
             System.out.println("If this is an error, try rolling back with `rollback <targetStage>`");
-            return;
+            return false;
         }
 
         Metadata.getDataDir(workingDir).mkdirs();
@@ -55,12 +62,17 @@ public class Run {
                 System.out.println("  - Roll back the stage using \"rollback " + stage.name().toLowerCase() + "\"");
                 System.out.println("  - Resolve issues manually and run \"mark-resolved\" (see mark-resolved --help)");
                 System.out.println("  - Ignore the problems (\"Problems\" don't always mean something is broken)");
-                return;
+                return false;
             }
 
             if (stage == Stage.JPLAG)
-                return;
+                return false;
+
+            if (stopAfterOneStage)
+                return true;
         }
+
+        return false;
     }
 
     private static List<Submission> runStage(

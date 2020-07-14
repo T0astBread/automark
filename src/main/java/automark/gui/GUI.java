@@ -11,8 +11,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.*;
+import java.util.stream.*;
 
 public class GUI {
     public static void start(CommandLineArgs commandLineArgs) {
@@ -33,6 +35,8 @@ public class GUI {
         });
 
         Spark.staticFiles.location("/automark/gui");
+
+        Spark.webSocket("/", new RunWebSocketHandler(workingDir, permanentSecret, commandLineArgs));
 
         if (!commandLineArgs.enableInsecureDebugMechanisms) {
             // Doesn't apply to static files
@@ -81,6 +85,23 @@ public class GUI {
 
             List<Submission> submissions = Metadata.loadSubmissions(Metadata.getMetadataFile(workingDir, stage));
             return submissions;
+        }, GSON::toJson);
+
+
+        Spark.get("/data", (request, response) -> {
+            response.type(MIME_JSON);
+
+            Map<String, List<Submission>> submissions = new HashMap<>();
+            for (Stage stage : Stage.values()) {
+                File submissionFile = Metadata.getMetadataFile(workingDir, stage);
+                if (submissionFile.exists()) {
+                    submissions.put(stage.name(), Metadata.loadSubmissions(submissionFile));
+                }
+            }
+            return submissions;
+
+//            List<Submission> submissions = Metadata.loadSubmissions(Metadata.getMetadataFile(workingDir, stage));
+//            return submissions;
         }, GSON::toJson);
 
 
