@@ -19,6 +19,8 @@ const PROBLEM_TYPES = [
     "TEST_FAILURE",
 ]
 
+const rollbackButton = document.getElementById("rollback")
+
 let selectedStage = null
 let visibleStage = null
 let lastCompletedStage = null
@@ -31,7 +33,6 @@ const updateHash = () => {
 
 const renderStages = () => {
     let done = true
-    let _lastStage = null
     const listElement = document.createElement("ul")
     STAGES.forEach(stage => {
         const element = document.createElement("li")
@@ -42,46 +43,66 @@ const renderStages = () => {
         if ((selectedStage ? selectedStage.name : lastCompletedStage) === stage.name)
             element.classList.add("selected")
 
+        stage.done = done
+
         listElement.appendChild(element)
+
 
         element.addEventListener("click", evt => {
             console.log("Clicked", stage)
             selectedStage = stage
+            updateToolbarButtons()
             renderStages()
             renderCurrentSubmissions()
             updateHash()
         })
 
-        if (stage.name === lastCompletedStage) {
+
+        if (lastCompletedStage && stage.name === lastCompletedStage.name)
             done = false
-            _lastStage = stage
-        }
     })
 
     const oldListElement = document.querySelector("#stages ul")
     const stagesElement = oldListElement.parentElement
     stagesElement.removeChild(oldListElement)
     stagesElement.appendChild(listElement)
-
-    return _lastStage
 }
 
 const renderSubmissions = async (submissions, stage) => {
     if (visibleStage && stage && visibleStage.name === stage.name)
         return
 
-    const submissionsTbody = document.querySelector("#submissions tbody")
-    submissionsTbody.innerHTML = ""
-    submissions
-        .map(renderSubmission)
-        .forEach(submissionElem => submissionsTbody.appendChild(submissionElem))
+    const submissionsTable = document.querySelector("#submissions table")
+    const errorStageNotCompleted = document.getElementById("submissions-error-stage-not-completed")
+
+    const hide = elem => elem.classList.add("hidden")
+    const show = elem => elem.classList.remove("hidden")
+
+    if (stage.done) {
+        show(submissionsTable)
+        hide(errorStageNotCompleted)
+
+        const submissionsTbody = document.querySelector("#submissions tbody")
+        submissionsTbody.innerHTML = ""
+        submissions
+            .map(renderSubmission)
+            .forEach(submissionElem => submissionsTbody.appendChild(submissionElem))
+    } else {
+        hide(submissionsTable)
+        show(errorStageNotCompleted)
+    }
+
     visibleStage = stage
 }
 
 const renderCurrentSubmissions = async () => {
-    const submissions = await fetch(`/submissions?stageName=${selectedStage.name}`).then(r => r.json())
-    console.log("Rendering for stage", selectedStage ? selectedStage.name : selectedStage, submissions)
-    renderSubmissions(submissions, selectedStage)
+    if (selectedStage.done) {
+        const submissions = await fetch(`/submissions?stageName=${selectedStage.name}`).then(r => r.json())
+        console.log("Rendering for stage", selectedStage ? selectedStage.name : selectedStage, submissions)
+        renderSubmissions(submissions, selectedStage)
+    } else {
+        renderSubmissions(null, selectedStage)
+    }
 }
 
 /*<tr>
@@ -140,21 +161,66 @@ const renderProblemTd = (problemType, submission) => {
     return problemTd
 }
 
-(async () => {
+const rollback = async () => {
+    console.log("rollback", selectedStage)
+    const response = await fetch(`/rollback?targetStageName=${selectedStage.name}`, {
+        method: "POST"
+    })
+    const text = await response.text()
+    console.log(text)
+    if (response.status !== 200) {
+        alert(text)
+    }
+    await reloadMetadata(true)
+}
+
+const reloadMetadata = async jumpToLastCompleted => {
+    if (!jumpToLastCompleted)
+        updateSelectedStageFromHash()
+
     const metadata = await fetch("/latest-metadata").then(r => r.json())
     console.log(metadata)
-    lastCompletedStage = metadata.lastStage
-    selectedStage = renderStages()
+
+    lastCompletedStage = stageFromName(metadata.lastStage)
+    console.log(lastCompletedStage)
+    if (selectedStage == null || jumpToLastCompleted)
+        selectedStage = lastCompletedStage
+
+    renderStages()
     renderSubmissions(metadata.submissions, selectedStage)
     updateHash()
+    updateToolbarButtons()
+}
+
+const updateSelectedStageFromHash = () => {
+    const stageName = location.hash.substr(1)
+    const newSelectedStage = stageFromName(stageName)
+    if (newSelectedStage != null)
+        selectedStage = newSelectedStage
+}
+
+const updateToolbarButtons = () => {
+    rollbackButton.disabled = selectedStage == null || !selectedStage.done
+}
+
+const stageFromName = stageName =>
+    stageName ? STAGES.find(s => s.name === stageName) : null
+
+;(async () => {
+//    const metadata = await fetch("/latest-metadata").then(r => r.json())
+//    console.log(metadata)
+//    lastCompletedStage = metadata.lastStage
+//    selectedStage = renderStages()
+//    renderSubmissions(metadata.submissions, selectedStage)
+//    updateHash()
+    await reloadMetadata()
 
     window.addEventListener("hashchange", () => {
         console.log("hashchange")
-        const stageName = location.hash.substr(1)
-        const newSelectedStage = STAGES.find(s => s.name === stageName)
-        if (newSelectedStage != null)
-            selectedStage = newSelectedStage
+        updateSelectedStageFromHash()
         renderStages()
         renderCurrentSubmissions()
     })
+
+    rollbackButton.addEventListener("click", rollback)
 })()

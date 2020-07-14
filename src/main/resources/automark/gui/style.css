@@ -13,6 +13,14 @@ body {
 	font-size: 1.2em;
 }
 
+.hidden {
+    display: none!important;
+}
+
+.symbol {
+    font-family: 'Noto Color Emoji', serif;
+}
+
 #toolbar {
     display: flex;
     flex-direction: row;
@@ -137,6 +145,7 @@ h1 {
 
 #submissions {
     flex-grow: 4;
+    position: relative;
     background-color: white;
 }
 
@@ -197,6 +206,24 @@ h1 {
     background-color: #ccc;
 }
 */
+
+#submissions .submissions-error {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 1.35em;
+}
+
+#submissions .submissions-error > :first-child {
+    font-size: 2em;
+}
+
+#submissions .submissions-error > :nth-child(2) {
+    margin-top: 1em;
+}
 
 #terminal {
     word-break: break-all;

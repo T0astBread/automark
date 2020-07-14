@@ -1,7 +1,9 @@
 package automark.gui;
 
+import automark.*;
 import automark.io.*;
 import automark.models.*;
+import automark.subcommands.*;
 import com.google.gson.*;
 import spark.*;
 
@@ -79,6 +81,28 @@ public class GUI {
 
             List<Submission> submissions = Metadata.loadSubmissions(Metadata.getMetadataFile(workingDir, stage));
             return submissions;
+        }, GSON::toJson);
+
+
+        Spark.post("/rollback", (request, response) -> {
+            String stageName = request.queryParams("targetStageName");
+            Stage targetStage;
+            try {
+                targetStage = Stage.valueOf(stageName);
+            } catch (IllegalArgumentException e) {
+                response.status(400);
+                return "Unknown stage";
+            }
+
+            try {
+                Rollback.run(workingDir, targetStage);
+            } catch (UserFriendlyException e) {
+                e.printStackTrace();
+                response.status(500);
+                return e.getMessage();
+            }
+
+            return "";
         }, GSON::toJson);
 
 
