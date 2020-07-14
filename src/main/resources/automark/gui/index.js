@@ -68,11 +68,8 @@ class App extends Component {
 
     selectLastCompletedStage() {
         const lastCompletedStage = this.getLastCompletedStage()
-        location.hash = `#${lastCompletedStage.name}`
-//        this.setState({
-//            ...this.state,
-//            selectedStage: lastCompletedStage,
-//        })
+        if (lastCompletedStage != null)
+            location.hash = `#${lastCompletedStage.name}`
     }
 
     getLastCompletedStage() {
@@ -153,13 +150,13 @@ class App extends Component {
     render() {
         const {
             runWebSocket,
-            terminalText,
             selectedStage,
             submissionsData,
         } = this.state
         const isRunning = runWebSocket != null
 
         const selectedSubmissions = selectedStage == null ? null : submissionsData[selectedStage.name]
+        const nothingCompleted = Object.keys(submissionsData).length === 0
 
         // see #1
         let lastStageWasCompleted = false
@@ -172,7 +169,7 @@ class App extends Component {
                 <button onClick="${() => this.startRun()}" disabled="${isRunning}">
                     <span class="symbol">▶</span>️ Run
                 </button>
-                <button onClick="${() => this.rollback()}" disabled="${isRunning}">
+                <button onClick="${() => this.rollback()}" disabled="${isRunning || nothingCompleted || selectedSubmissions == null}">
                     <span class="symbol">⬅️</span>️ Rollback
                 </button>
                 <div class="spacer"></div>
@@ -235,9 +232,13 @@ class App extends Component {
                             `)
                         }</tbody>
                     </table>
-                    <div class="submissions-error ${selectedSubmissions != null ? "hidden" : ""}" id="submissions-error-stage-not-completed">
+                    <div class="submissions-error ${nothingCompleted || selectedSubmissions != null ? "hidden" : ""}">
                         <div class="symbol">⚠️</div>
                         <div>Selected stage has not been completed yet</div>
+                    </div>
+                    <div class="submissions-error ${nothingCompleted ? "" : "hidden"}">
+                        <div class="symbol">💡️</div>
+                        <div>Nothing to show. Run a stage first!</div>
                     </div>
                 </div>
                 <pre id="terminal" ref="${this.terminalRef}"><code></code></pre>
