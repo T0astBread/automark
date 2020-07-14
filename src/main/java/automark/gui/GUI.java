@@ -96,6 +96,8 @@ public class GUI {
                 File submissionFile = Metadata.getMetadataFile(workingDir, stage);
                 if (submissionFile.exists()) {
                     submissions.put(stage.name(), Metadata.loadSubmissions(submissionFile));
+                } else {
+                    break;
                 }
             }
             return submissions;

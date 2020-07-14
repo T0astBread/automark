@@ -87,14 +87,14 @@ public class TestStage {
         Launcher launcher = LauncherFactory.create();
 //        TestPlan testPlan = launcher.discover(launcherDiscoveryRequest);
         launcher.registerTestExecutionListeners(listener);
-//        PrintStream sout = System.out;
-//        System.setOut(new PrintStream(new OutputStream() {
-//            public void write(int b) {
-//                //DO NOTHING
-//            }
-//        }));
+        PrintStream sout = System.out;
+        System.setOut(new PrintStream(new OutputStream() {
+            public void write(int b) {
+                //DO NOTHING
+            }
+        }));
         launcher.execute(launcherDiscoveryRequest);
-//        System.setOut(sout);
+        System.setOut(sout);
 
         TestExecutionSummary summary = listener.getSummary();
         for (TestExecutionSummary.Failure failure : summary.getFailures()) {

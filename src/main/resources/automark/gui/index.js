@@ -1,4 +1,4 @@
-import { h, Component, render } from "/preact-10.4.6.min.js"
+import { h, Component, render, createRef } from "/preact-10.4.6.min.js"
 import htm from "/htm-3.0.4.min.js"
 
 const STAGES = [
@@ -11,6 +11,8 @@ const STAGES = [
     {name: "TEST", niceName: "Test"},
     {name: "SUMMARY", niceName: "Summary"},
 ]
+
+const STAGES_REVERSE = [...STAGES].reverse()
 
 const PROBLEM_TYPES = [
     "EXCEPTION",
@@ -27,15 +29,6 @@ const stageFromName = stageName => STAGES.find(s => s.name === stageName)
 
 const stageFromHash = () => stageFromName(location.hash.substr(1))
 
-const getLastCompletedIndex = lastCompletedStage => {
-    for (let i = 0; i < STAGES.length; i++) {
-        const stage = STAGES[i]
-        if (stage === lastCompletedStage)
-            return i
-    }
-    return -1
-}
-
 
 // Initialize htm with Preact
 const html = htm.bind(h)
@@ -47,14 +40,8 @@ class App extends Component {
             selectedStage: stageFromHash(),
             runWebSocket: null,
             submissionsData: {},
-            terminalText: [
-                "Automark v0.0.0",
-                "",
-                "Output will appear here",
-                "",
-                "",
-            ]
         }
+        this.terminalRef = createRef()
 
         this.loadData()
 
@@ -69,7 +56,7 @@ class App extends Component {
         })
     }
 
-    async loadData() {
+    async loadData(jumpToLastSuccessful) {
         const data = await fetch("/data").then(r => r.json())
         console.log(data)
 
@@ -77,6 +64,90 @@ class App extends Component {
             ...this.state,
             submissionsData: data,
         })
+    }
+
+    selectLastCompletedStage() {
+        const lastCompletedStage = this.getLastCompletedStage()
+        location.hash = `#${lastCompletedStage.name}`
+//        this.setState({
+//            ...this.state,
+//            selectedStage: lastCompletedStage,
+//        })
+    }
+
+    getLastCompletedStage() {
+        const lastCompletedStage = this.state.submissionsData == null
+            ? null
+            : STAGES_REVERSE.find(stage => this.state.submissionsData[stage.name] != null)
+
+        return lastCompletedStage
+    }
+
+    async rollback() {
+        const { selectedStage } = this.state
+
+        if (selectedStage != null) {
+            console.log("rollback", selectedStage)
+            const response = await fetch(`/rollback?targetStageName=${selectedStage.name}`, {
+                method: "POST"
+            })
+            const text = await response.text()
+            console.log(text)
+            if (response.status !== 200) {
+                alert(text)
+            }
+            await this.loadData()
+            this.selectLastCompletedStage()
+        }
+    }
+
+    async startRun() {
+        const runWebSocket = new WebSocket(`ws://${location.host}/run`)
+
+        runWebSocket.addEventListener("message", async ({ data }) => {
+            switch (data[0]) {
+                case "l":
+                    this.appendTerminalText(data.substr(1))
+                    break
+                case "s":
+                    await this.loadData()
+                    this.selectLastCompletedStage()
+                    break
+            }
+        })
+
+        runWebSocket.addEventListener("close", async evt => {
+            this.setState({
+                ...this.state,
+                runWebSocket: null,
+            })
+            await this.loadData()
+            this.selectLastCompletedStage()
+        })
+
+        runWebSocket.addEventListener("open", evt => {
+            runWebSocket.send(document.cookie.replace("auth=", ""))  // FIXME: This WILL break if cookies ever change
+        })
+
+        this.setState({
+            ...this.state,
+            runWebSocket,
+        })
+    }
+
+    appendTerminalText(text) {
+        const terminal = this.terminalRef.current
+        if (terminal != null) {
+            const terminalText = terminal.children[0]
+            const childElementCount = terminalText.childElementCount
+            for (let i = 0; i < childElementCount - 200; i++) {
+                terminalText.children[i].remove()
+            }
+            const lineSpan = document.createElement("span")
+            lineSpan.innerText = text
+            terminalText.appendChild(lineSpan)
+            terminal.scrollTop = terminal.scrollHeight
+        }
     }
 
     render() {
@@ -95,9 +166,15 @@ class App extends Component {
 
         return html`
             <div id="toolbar">
-                <button><span class="symbol">📂</span> Open</button>
-                <button><span class="symbol">▶</span>️ Run</button>
-                <button id="rollback"><span class="symbol">⬅️</span>️ Rollback</button>
+                <button disabled="${isRunning}">
+                    <span class="symbol">📂</span> Open
+                </button>
+                <button onClick="${() => this.startRun()}" disabled="${isRunning}">
+                    <span class="symbol">▶</span>️ Run
+                </button>
+                <button onClick="${() => this.rollback()}" disabled="${isRunning}">
+                    <span class="symbol">⬅️</span>️ Rollback
+                </button>
                 <div class="spacer"></div>
                 <h1>Automark</h1>
             </div>
@@ -163,7 +240,7 @@ class App extends Component {
                         <div>Selected stage has not been completed yet</div>
                     </div>
                 </div>
-                <pre id="terminal"><code>${terminalText.map(line => `${line}\n`)}</code></pre>
+                <pre id="terminal" ref="${this.terminalRef}"><code></code></pre>
             </div>
         `
     }
