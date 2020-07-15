@@ -158,6 +158,21 @@ public class GUI {
         });
 
 
+        Spark.post("/mark-resolved", (request, response) -> {
+            String submissionSlug = request.queryParams("submissionSlug");
+            String problemIdentifier = request.queryParams("problemIdentifier");
+            boolean requalify = "true".equals(request.queryParams("requalify"));
+            try {
+                MarkResolved.run(workingDir.get(), submissionSlug, problemIdentifier, requalify);
+            } catch (UserFriendlyException e) {
+                response.status(500);
+                e.printStackTrace();
+                return e.getMessage();
+            }
+            return "ok";
+        });
+
+
         if(commandLineArgs.openBrowser) {
             String url = "http://localhost:4567/auth?secret=" + initiationSecret;
             try {

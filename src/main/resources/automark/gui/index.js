@@ -15,13 +15,13 @@ const STAGES = [
 const STAGES_REVERSE = [...STAGES].reverse()
 
 const PROBLEM_TYPES = [
-    "EXCEPTION",
-    "NOT_SUBMITTED",
-    "INVALID_SUBMISSION_FILE",
-    "PLAGIARIZED",
-    "COMPILATION_ERROR",
-    "TEST_SUITE_FAILURE",
-    "TEST_FAILURE",
+    {name: "EXCEPTION", shortName: "E"},
+    {name: "NOT_SUBMITTED", shortName: "N"},
+    {name: "INVALID_SUBMISSION_FILE", shortName: "I"},
+    {name: "PLAGIARIZED", shortName: "P"},
+    {name: "COMPILATION_ERROR", shortName: "C"},
+    {name: "TEST_SUITE_FAILURE", shortName: "TS"},
+    {name: "TEST_FAILURE", shortName: "T"},
 ]
 
 
@@ -182,6 +182,25 @@ class App extends Component {
         }
     }
 
+    async markResolved(submission, problemIdentifier, requalify) {
+        console.log("markResolved", submission, problemIdentifier, requalify)
+
+        let queryParams = `submissionSlug=${submission.slug}`
+        if (problemIdentifier != null)
+            queryParams += `&problemIdentifier=${problemIdentifier}`
+        if (requalify)
+            queryParams += "&requalify=true"
+        const response = await fetch(`/mark-resolved?${queryParams}`, {
+            method: "POST"
+        })
+        const text = await response.text()
+        console.log(text)
+        if (response.status !== 200) {
+            alert(text)
+        }
+        this.loadData()
+    }
+
     render() {
         const {
             workingDir,
@@ -246,26 +265,43 @@ class App extends Component {
                             <th rowspan="2">Email</th>
                             <th colspan="7">Problems</th>
                         </tr>
-                        <tr>
-                            <th>E</th>
-                            <th>I</th>
-                            <th>N</th>
-                            <th>P</th>
-                            <th>C</th>
-                            <th>TS</th>
-                            <th>T</th>
-                        </tr>
+                        <tr>${
+                            PROBLEM_TYPES.map(problemType => html`
+                                <th title="${problemType.name}">
+                                    ${problemType.shortName}
+                                </th>`)
+                        }</tr>
                         </thead>
                         <tbody>${
                             selectedSubmissions == null ? null : selectedSubmissions.map(submission => html`
                                 <tr>
                                     <td><input type="checkbox" checked="${false}"/></td>
-                                    <td><input type="checkbox" checked="${submission.isDisqualified}"/></td>
+                                    <td><input type="checkbox"
+                                        checked="${submission.isDisqualified}"
+                                        disabled="${!submission.isDisqualified}"
+                                        title="${submission.isDisqualified
+                                            ? 'Re-include disqualified submission ' + submission.slug
+                                            : submission.slug + ' is not disqualified from further processing'}"
+                                        onClick="${() => this.markResolved(submission, null, true)}"
+                                    /></td>
                                     <td>${submission.studentName}</td>
                                     <td>${submission.studentEmail}</td>
-                                    ${PROBLEM_TYPES.map(problemType => (
-                                        html`<td><input type="checkbox" checked="${submission.problems.some(p => p.type === problemType)}"/></td>`
-                                    ))}
+                                    ${PROBLEM_TYPES.map(problemType => {
+                                        const problems = submission.problems.filter(p => p.type === problemType.name)
+                                        const isPresent = problems.length > 0
+                                        const title = isPresent
+                                            ? `Mark ${problems.length} ${problemType.name} problem${problems.length > 1 ? 's' : ''} in ${submission.slug} as resolved`
+                                            : `No ${problemType.name} problems in ${submission.slug}`
+                                        return html`<td>
+                                            <input type="checkbox"
+                                                checked="${isPresent}"
+                                                disabled="${!isPresent}"
+                                                title="${title}"
+                                                style="${isPresent ? 'cursor:pointer' : ''}"
+                                                onClick="${() => this.markResolved(submission, problemType.name, false)}"
+                                            />
+                                        </td>`
+                                    })}
                                 </tr>
                             `)
                         }</tbody>
