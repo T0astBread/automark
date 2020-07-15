@@ -45,7 +45,11 @@ class App extends Component {
         this.terminalRef = createRef()
 
         this.loadData()
-            .then(() => this.loadWorkingDir())
+            .then(() => {
+                if(this.state.selectedStage == null)
+                    this.selectLastCompletedStage()
+                this.loadWorkingDir()
+            })
 
         window.addEventListener("hashchange", () => {
             const selectedStage = stageFromHash()
