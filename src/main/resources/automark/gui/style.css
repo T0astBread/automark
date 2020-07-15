@@ -163,46 +163,85 @@ h1 {
     background: #ddd;
 }
 
-#submissions tbody tr:nth-child(2n) {
-    background-color: #e6e6e6;
-}
-
 #submissions th, #submissions td {
     border: none;
 }
 
-#submissions thead tr:nth-child(2) th:nth-child(1),
-#submissions td:nth-child(5) {
+#submissions tbody tr.submission-row:nth-child(2n) {
+    background-color: #e6e6e6;
+}
+
+#submissions .problem-row h4 {
+    padding: 0;
+    padding-top: .5em;
+    padding-bottom: .25em;
+    margin: 0;
+}
+
+#submissions .problem-row pre {
+    display: block;
+    width: 0;
+    padding: 0;
+    margin: 0;
+    margin-top: .25em;
+    margin-bottom: .5em;
+}
+
+#submissions td:first-child input[type=checkbox] {
+    display: block;
+    width: 1.2em;
+    height: 1em;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+#submissions td:first-child input[type=checkbox]::before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 7px solid black;
+}
+
+#submissions td:first-child input[type=checkbox]:checked::before {
+    transform: translate(-50%, -50%) rotate(135deg);
+}
+
+.bg-exception {
     background-color: #f5627f;
 }
 
-#submissions thead tr:nth-child(2) th:nth-child(2),
-#submissions td:nth-child(6) {
+.bg-not-submitted {
     background-color: #f5abb9;
 }
 
-#submissions thead tr:nth-child(2) th:nth-child(3),
-#submissions td:nth-child(7) {
+.bg-invalid-submission-file {
     background-color: #ccc;
 }
 
-#submissions thead tr:nth-child(2) th:nth-child(4),
-#submissions td:nth-child(8) {
+.bg-plagiarized {
     background-color: #ffd97f;
 }
 
-#submissions thead tr:nth-child(2) th:nth-child(5),
-#submissions td:nth-child(9) {
+.bg-compilation-error {
     background-color: #5dd496;
 }
 
-#submissions thead tr:nth-child(2) th:nth-child(6),
-#submissions td:nth-child(10) {
+.bg-test-suite-failure {
     background-color: #52d1ff;
 }
 
-#submissions thead tr:nth-child(2) th:nth-child(7),
-#submissions td:nth-child(11) {
+.bg-test-failure {
     background-color: #b4ebff;
 }
 

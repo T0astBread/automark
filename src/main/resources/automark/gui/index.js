@@ -22,7 +22,9 @@ const PROBLEM_TYPES = [
     {name: "COMPILATION_ERROR", shortName: "C"},
     {name: "TEST_SUITE_FAILURE", shortName: "TS"},
     {name: "TEST_FAILURE", shortName: "T"},
-]
+].map(p => ({...p,
+    bgStyleClass: `bg-${p.name.toLowerCase().replace(/_/g, "-")}`
+}))
 
 
 const stageFromName = stageName => STAGES.find(s => s.name === stageName)
@@ -41,6 +43,7 @@ class App extends Component {
             selectedStage: stageFromHash(),
             runWebSocket: null,
             submissionsData: {},
+            expandedSubmissions: [],
         }
         this.terminalRef = createRef()
 
@@ -207,6 +210,7 @@ class App extends Component {
             runWebSocket,
             selectedStage,
             submissionsData,
+            expandedSubmissions,
         } = this.state
         const isRunning = runWebSocket != null
 
@@ -267,43 +271,69 @@ class App extends Component {
                         </tr>
                         <tr>${
                             PROBLEM_TYPES.map(problemType => html`
-                                <th title="${problemType.name}">
+                                <th title="${problemType.name}" class="${problemType.bgStyleClass}">
                                     ${problemType.shortName}
                                 </th>`)
                         }</tr>
                         </thead>
                         <tbody>${
-                            selectedSubmissions == null ? null : selectedSubmissions.map(submission => html`
-                                <tr>
-                                    <td><input type="checkbox" checked="${false}"/></td>
-                                    <td><input type="checkbox"
-                                        checked="${submission.isDisqualified}"
-                                        disabled="${!submission.isDisqualified}"
-                                        title="${submission.isDisqualified
-                                            ? 'Re-include disqualified submission ' + submission.slug
-                                            : submission.slug + ' is not disqualified from further processing'}"
-                                        onClick="${() => this.markResolved(submission, null, true)}"
-                                    /></td>
-                                    <td>${submission.studentName}</td>
-                                    <td>${submission.studentEmail}</td>
-                                    ${PROBLEM_TYPES.map(problemType => {
-                                        const problems = submission.problems.filter(p => p.type === problemType.name)
-                                        const isPresent = problems.length > 0
-                                        const title = isPresent
-                                            ? `Mark ${problems.length} ${problemType.name} problem${problems.length > 1 ? 's' : ''} in ${submission.slug} as resolved`
-                                            : `No ${problemType.name} problems in ${submission.slug}`
-                                        return html`<td>
-                                            <input type="checkbox"
-                                                checked="${isPresent}"
-                                                disabled="${!isPresent}"
-                                                title="${title}"
-                                                style="${isPresent ? 'cursor:pointer' : ''}"
-                                                onClick="${() => this.markResolved(submission, problemType.name, false)}"
-                                            />
-                                        </td>`
+                            selectedSubmissions == null ? null : selectedSubmissions.map(submission => {
+                                const isExpanded = expandedSubmissions.includes(submission.slug)
+                                const toggleExpanded = () => this.setState({
+                                    ...this.state,
+                                    expandedSubmissions: isExpanded
+                                        ? expandedSubmissions.filter(s => submission.slug !== s)
+                                        : [...expandedSubmissions, submission.slug]
+                                })
+                                const hasProblems = submission.problems.length > 0
+
+                                return html`
+                                    <tr class="submission-row">
+                                        <td><input type="checkbox"
+                                            class="${hasProblems ? '' : 'hidden'}"
+                                            checked="${isExpanded}"
+                                            onClick="${toggleExpanded}"
+                                        /></td>
+                                        <td><input type="checkbox"
+                                            checked="${submission.isDisqualified}"
+                                            disabled="${!submission.isDisqualified}"
+                                            title="${submission.isDisqualified
+                                                ? 'Re-include disqualified submission ' + submission.slug
+                                                : submission.slug + ' is not disqualified from further processing'}"
+                                            onClick="${() => this.markResolved(submission, null, true)}"
+                                        /></td>
+                                        <td>${submission.studentName}</td>
+                                        <td>${submission.studentEmail}</td>
+                                        ${PROBLEM_TYPES.map(problemType => {
+                                            const problems = submission.problems.filter(p => p.type === problemType.name)
+                                            const isPresent = problems.length > 0
+                                            const title = isPresent
+                                                ? `Mark ${problems.length} ${problemType.name} problem${problems.length > 1 ? 's' : ''} in ${submission.slug} as resolved`
+                                                : `No ${problemType.name} problems in ${submission.slug}`
+                                            return html`<td class="${problemType.bgStyleClass}">
+                                                <input type="checkbox"
+                                                    checked="${isPresent}"
+                                                    disabled="${!isPresent}"
+                                                    title="${title}"
+                                                    style="${isPresent ? 'cursor:pointer' : ''}"
+                                                    onClick="${() => this.markResolved(submission, problemType.name, false)}"
+                                                />
+                                            </td>`
+                                        })}
+                                    </tr>
+                                    ${!(hasProblems && isExpanded) ? '' : submission.problems.map(problem => {
+                                        const problemType = PROBLEM_TYPES.find(p => p.name === problem.type)
+
+                                        return html`<tr class="problem-row">
+                                            <td colspan="2"></td>
+                                            <td colspan="9">
+                                                <h4 class="${problemType.bgStyleClass}">${problem.type}</h4>
+                                                <pre>${problem.summary}</pre>
+                                            </td>
+                                        </tr>`
                                     })}
-                                </tr>
-                            `)
+                                `
+                            })
                         }</tbody>
                     </table>
                     <div class="submissions-error ${nothingCompleted || selectedSubmissions != null ? "hidden" : ""}">
