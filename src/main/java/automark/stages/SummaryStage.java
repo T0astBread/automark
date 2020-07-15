@@ -45,6 +45,16 @@ public class SummaryStage {
             throw new UserFriendlyException("Failed to write summary", e);
         }
 
+        try (BufferedReader reader = new BufferedReader(new FileReader(summaryFile))) {
+            while (true) {
+                String line = reader.readLine();
+                if (line == null) break;
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            throw new UserFriendlyException("Failed to read out summary file after write");
+        }
+
         return submissions;
     }
 }

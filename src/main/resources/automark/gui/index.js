@@ -172,7 +172,7 @@ class App extends Component {
         if (terminal != null) {
             const terminalText = terminal.children[0]
             const childElementCount = terminalText.childElementCount
-            for (let i = 0; i < childElementCount - 200; i++) {
+            for (let i = 0; i < childElementCount - 2000; i++) {
                 terminalText.children[i].remove()
             }
             const lineSpan = document.createElement("span")
