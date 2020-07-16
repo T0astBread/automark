@@ -64,31 +64,6 @@ public class GUI {
         }));
 
 
-        Spark.get("/latest-metadata", (request, response) -> {
-            response.type(MIME_JSON);
-
-            Metadata.MetadataLoadingResult result = Metadata.loadLatestMetadata(workingDir.get());
-            return result;
-        }, GSON::toJson);
-
-
-        Spark.get("/submissions", (request, response) -> {
-            response.type(MIME_JSON);
-
-            String stageName = request.queryParams("stageName");
-            Stage stage;
-            try {
-                stage = Stage.valueOf(stageName);
-            } catch (IllegalArgumentException e) {
-                response.status(400);
-                return "Unknown stage";
-            }
-
-            List<Submission> submissions = Metadata.loadSubmissions(Metadata.getMetadataFile(workingDir.get(), stage));
-            return submissions;
-        }, GSON::toJson);
-
-
         Spark.get("/data", (request, response) -> {
             response.type(MIME_JSON);
 
