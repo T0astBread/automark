@@ -3,10 +3,14 @@ package automark.stages;
 import automark.*;
 import automark.io.*;
 import automark.models.*;
+import com.google.gson.internal.bind.util.*;
 
+import java.awt.*;
 import java.io.*;
+import java.net.*;
 import java.time.*;
 import java.util.*;
+import java.util.List;
 
 public class JPlagStage {
 
@@ -102,6 +106,19 @@ public class JPlagStage {
                 System.out.println("Copied " + submissionFolder.getName());
             } catch (IOException e) {
                 System.out.println("Failed to copy " + submissionFolder.getPath() + " to " + submissionFolderInRepo.getPath());
+            }
+        }
+
+        URI resultsURI = new File(resultsDir, "index.html").toURI();
+        Desktop desktop = Desktop.getDesktop();
+        if (desktop != null) {
+            try {
+                desktop.browse(resultsURI);
+            } catch (Exception e) {
+                e.printStackTrace(System.out);
+                System.out.println("Unable to open JPLag results in browser");
+                System.out.println();
+                System.out.println(resultsURI);
             }
         }
 
