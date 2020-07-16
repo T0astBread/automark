@@ -230,6 +230,7 @@ class App extends Component {
 
         const selectedSubmissions = selectedStage == null ? null : submissionsData[selectedStage.name]
         const nothingCompleted = Object.keys(submissionsData).length === 0
+        const lastCompletedIsSelected = this.getLastCompletedStage() === selectedStage
 
         // see #1
         let lastStageWasCompleted = false
@@ -310,9 +311,11 @@ class App extends Component {
                                         /></td>
                                         <td><input type="checkbox"
                                             checked="${submission.isDisqualified}"
-                                            disabled="${!submission.isDisqualified}"
+                                            disabled="${!(lastCompletedIsSelected && submission.isDisqualified)}"
                                             title="${submission.isDisqualified
-                                                ? 'Re-include disqualified submission ' + submission.slug
+                                                ? lastCompletedIsSelected
+                                                    ? 'Re-include disqualified submission ' + submission.slug
+                                                    : submission.slug + ' is disqualified from further processing'
                                                 : submission.slug + ' is not disqualified from further processing'}"
                                             onClick="${() => this.markResolved(submission, null, true)}"
                                         /></td>
@@ -323,22 +326,34 @@ class App extends Component {
                                             const isPresent = problems.length > 0
                                             const problemIsPlag = problemType.name === "PLAGIARIZED"
 
-                                            const title = isPresent
-                                                ? `Mark ${problems.length} ${problemType.name} problem${problems.length > 1 ? 's' : ''} in ${submission.slug} as resolved`
-                                                : problemIsPlag
-                                                    ? `Mark ${submission.slug} as plagiarized`
-                                                    : `No ${problemType.name} problems in ${submission.slug}`
+                                            let title
+                                            if (lastCompletedIsSelected) {
+                                                if (isPresent) {
+                                                    title = `Mark ${problems.length} ${problemType.name} problem${problems.length > 1 ? 's' : ''} in ${submission.slug} as resolved`
+                                                } else if (problemIsPlag) {
+                                                    title = `Mark ${submission.slug} as plagiarized`
+                                                } else {
+                                                    title = `No ${problemType.name} problems in ${submission.slug}`
+                                                }
+                                            } else {
+                                                title = `${problems.length > 0 ? problems.length : 'No'} ${problemType.name} problem${problems.length !== 1 ? 's' : ''} in ${submission.slug}`
+                                            }
 
-                                            const onClick = () => problemIsPlag && !isPresent
-                                                ? this.markPlagiarized(submission)
-                                                : this.markResolved(submission, problemType.name, false)
+                                            const onClick = () => {
+                                                if (lastCompletedIsSelected) {
+                                                    if (problemIsPlag && !isPresent)
+                                                        this.markPlagiarized(submission)
+                                                    else
+                                                        this.markResolved(submission, problemType.name, false)
+                                                }
+                                            }
 
                                             return html`<td class="${problemType.bgStyleClass}">
                                                 <input type="checkbox"
                                                     checked="${isPresent}"
-                                                    disabled="${!problemIsPlag && !isPresent}"
+                                                    disabled="${!lastCompletedIsSelected || (!problemIsPlag && !isPresent)}"
                                                     title="${title}"
-                                                    style="${isPresent ? 'cursor:pointer' : ''}"
+                                                    style="${isPresent && lastCompletedIsSelected ? 'cursor:pointer' : ''}"
                                                     onClick="${onClick}"
                                                 />
                                             </td>`
