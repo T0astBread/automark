@@ -204,6 +204,20 @@ class App extends Component {
         this.loadData()
     }
 
+    async markPlagiarized(submission) {
+        console.log("markPlagiarized", submission)
+
+        const response = await fetch(`/mark-plagiarized?submissionSlug=${submission.slug}`, {
+            method: "POST"
+        })
+        const text = await response.text()
+        console.log(text)
+        if (response.status !== 200) {
+            alert(text)
+        }
+        this.loadData()
+    }
+
     render() {
         const {
             workingDir,
@@ -307,16 +321,25 @@ class App extends Component {
                                         ${PROBLEM_TYPES.map(problemType => {
                                             const problems = submission.problems.filter(p => p.type === problemType.name)
                                             const isPresent = problems.length > 0
+                                            const problemIsPlag = problemType.name === "PLAGIARIZED"
+
                                             const title = isPresent
                                                 ? `Mark ${problems.length} ${problemType.name} problem${problems.length > 1 ? 's' : ''} in ${submission.slug} as resolved`
-                                                : `No ${problemType.name} problems in ${submission.slug}`
+                                                : problemIsPlag
+                                                    ? `Mark ${submission.slug} as plagiarized`
+                                                    : `No ${problemType.name} problems in ${submission.slug}`
+
+                                            const onClick = () => problemIsPlag && !isPresent
+                                                ? this.markPlagiarized(submission)
+                                                : this.markResolved(submission, problemType.name, false)
+
                                             return html`<td class="${problemType.bgStyleClass}">
                                                 <input type="checkbox"
                                                     checked="${isPresent}"
-                                                    disabled="${!isPresent}"
+                                                    disabled="${!problemIsPlag && !isPresent}"
                                                     title="${title}"
                                                     style="${isPresent ? 'cursor:pointer' : ''}"
-                                                    onClick="${() => this.markResolved(submission, problemType.name, false)}"
+                                                    onClick="${onClick}"
                                                 />
                                             </td>`
                                         })}

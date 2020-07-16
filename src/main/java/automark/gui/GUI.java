@@ -173,6 +173,19 @@ public class GUI {
         });
 
 
+        Spark.post("/mark-plagiarized", (request, response) -> {
+            String submissionSlug = request.queryParams("submissionSlug");
+            try {
+                MarkPlagiarized.run(workingDir.get(), List.of(submissionSlug));
+            } catch (UserFriendlyException e) {
+                response.status(500);
+                e.printStackTrace();
+                return e.getMessage();
+            }
+            return "ok";
+        });
+
+
         if(commandLineArgs.openBrowser) {
             String url = "http://localhost:4567/auth?secret=" + initiationSecret;
             try {
