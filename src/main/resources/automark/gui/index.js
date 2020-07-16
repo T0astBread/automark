@@ -65,6 +65,10 @@ class App extends Component {
         })
     }
 
+    componentDidMount() {
+        this.appendTerminalText("Output will appear here\n\n")
+    }
+
     async loadWorkingDir() {
         const response = await fetch("/working-dir")
         const text = await response.text()
