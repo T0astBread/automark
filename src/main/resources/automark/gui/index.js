@@ -359,13 +359,18 @@ class App extends Component {
                                             </td>`
                                         })}
                                     </tr>
-                                    ${!(hasProblems && isExpanded) ? '' : submission.problems.map(problem => {
+                                    ${!(hasProblems && isExpanded) ? '' : submission.problems.map((problem, i) => {
                                         const problemType = PROBLEM_TYPES.find(p => p.name === problem.type)
 
                                         return html`<tr class="problem-row">
                                             <td colspan="2"></td>
                                             <td colspan="9">
-                                                <h4 class="${problemType.bgStyleClass}">${problem.type}</h4>
+                                                <h4 class="${problemType.bgStyleClass}">
+                                                    ${problem.type}
+                                                    <button class="resolve-button ${lastCompletedIsSelected ? '' : 'hidden'}"
+                                                        onClick="${() => this.markResolved(submission, i+1, false)}"
+                                                        >⨯</button>
+                                                </h4>
                                                 <pre>${problem.summary}</pre>
                                             </td>
                                         </tr>`

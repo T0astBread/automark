@@ -176,6 +176,24 @@ h1 {
     padding-top: .5em;
     padding-bottom: .25em;
     margin: 0;
+    position: relative;
+}
+
+#submissions .problem-row h4 .resolve-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 1.75em;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    font-size: .9em;
+    font-weight: bold;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background: none;
+    border: none;
 }
 
 #submissions .problem-row pre {
