@@ -18,6 +18,8 @@ import java.util.*;
 
 public class TestStage {
 
+    private static final String METHOD_SIGNATURE_LINE_REGEX = "^\\s*public\\s+void\\s+(\\w+)\\([\\w\\s,]*\\).*$";
+
     public static List<Submission> run(File workingDir, Properties config, List<Submission> submissions) throws UserFriendlyException {
         // Read test suite data
         File compileDir = new File(Metadata.getDataDir(workingDir), "compile");
@@ -27,13 +29,16 @@ public class TestStage {
         // Print overview of parsed tests
         System.out.println();
         System.out.println("Recognized tests:");
-        for (TestSuite suite: testSuites) {
+        for (TestSuite suite : testSuites) {
             System.out.println(suite.getName());
             for (TestMethod method : suite.getMethods()) {
                 Summaries.printIndentation(System.out, 1);
                 System.out.println(method.getMethodName());
-                Summaries.printIndentation(System.out, 2);
-                System.out.println(method.getDescription());
+
+                if (method.getDescription() != null) {
+                    Summaries.printIndentation(System.out, 2);
+                    System.out.println(method.getDescription());
+                }
             }
         }
         System.out.println();
@@ -43,7 +48,7 @@ public class TestStage {
 
         // Iterate over submissions
         for (Submission submission : submissions) {
-            if(submission.isDisqualified())
+            if (submission.isDisqualified())
                 continue;
 
             File submissionDir = new File(compileDir, submission.getSlug());
@@ -51,7 +56,7 @@ public class TestStage {
             // Create a new ClassLoader
             URLClassLoader classLoader;
             try {
-                classLoader = new URLClassLoader(new URL[]{ submissionDir.toURI().toURL() });
+                classLoader = new URLClassLoader(new URL[]{submissionDir.toURI().toURL()});
             } catch (Throwable e) {
                 submission.addProblem(Problem.createException(Stage.TEST, new UnexpectedException("Error while running tests", e)));
                 submission.setDisqualified(true);
@@ -104,7 +109,7 @@ public class TestStage {
                     System.out.println("Main thread interrupted");
                 }
                 System.setOut(sout);
-                if(testThread.isAlive()) {
+                if (testThread.isAlive()) {
                     testThread.stop();
                     System.out.println("Warning: Forcefully killed test thread for " + submission.getSlug());
                     submission.addProblem(createTestSuiteFailProblem(
@@ -128,12 +133,17 @@ public class TestStage {
                     String line = reader.readLine();
                     if (line == null) break;
                     if (line.trim().equals("@Test")) {
-                        String description = reader.readLine()
-                                .trim()
-                                .substring(2)
-                                .trim();
-                        String methodName = reader.readLine()
-                                .replaceAll("^\\s*public\\s+void\\s+(\\w+)\\([\\w\\s,]*\\).*$", "$1");
+                        line = reader.readLine();
+                        String description = null;
+                        if (!line.matches(METHOD_SIGNATURE_LINE_REGEX)) {
+                            description = line
+                                    .trim()
+                                    .substring(2)
+                                    .trim();
+                            line = reader.readLine();
+                        }
+                        String methodName = line
+                                .replaceAll(METHOD_SIGNATURE_LINE_REGEX, "$1");
                         methods.add(new TestMethod(methodName, description));
                     }
                 }
@@ -183,12 +193,22 @@ public class TestStage {
                 .filter(testMethod -> !succeededTests.contains(testMethod.getMethodName()))
                 .forEach(failedTestMethod -> submission.addProblem(createTestFailProblem(testSuiteData.getName(), failedTestMethod)));
     }
-    
+
     private static Problem createTestSuiteFailProblem(String testSuiteName, String reason) {
         return new Problem(Stage.TEST, Problem.Type.TEST_SUITE_FAILURE, testSuiteName + "\n" + reason);
     }
 
     private static Problem createTestFailProblem(String testSuiteName, TestMethod method) {
-        return new Problem(Stage.TEST, Problem.Type.TEST_FAILURE, testSuiteName + "::" + method.getMethodName() + "\n  " + method.getDescription());
+        StringBuilder summary = new StringBuilder()
+                .append(testSuiteName)
+                .append("::")
+                .append(method.getMethodName());
+
+        if (method.getDescription() != null) {
+            summary.append("\n")
+                    .append(method.getDescription());
+        }
+
+        return new Problem(Stage.TEST, Problem.Type.TEST_FAILURE, summary.toString());
     }
 }
