@@ -3,8 +3,10 @@ package automark.stages;
 import automark.*;
 import automark.io.*;
 import automark.models.*;
+import automark.stages.test.*;
 import org.junit.platform.engine.*;
 import org.junit.platform.engine.discovery.*;
+import org.junit.platform.engine.reporting.*;
 import org.junit.platform.engine.support.descriptor.*;
 import org.junit.platform.launcher.*;
 import org.junit.platform.launcher.core.*;
@@ -15,20 +17,38 @@ import java.net.*;
 import java.util.*;
 
 public class TestStage {
+
     public static List<Submission> run(File workingDir, Properties config, List<Submission> submissions) throws UserFriendlyException {
+        // Read test suite data
         File compileDir = new File(Metadata.getDataDir(workingDir), "compile");
         List<File> testFiles = Metadata.getTestFiles(workingDir);
+        List<TestSuite> testSuites = readTestSuites(testFiles);
+
+        // Print overview of parsed tests
+        System.out.println();
+        System.out.println("Recognized tests:");
+        for (TestSuite suite: testSuites) {
+            System.out.println(suite.getName());
+            for (TestMethod method : suite.getMethods()) {
+                Summaries.printIndentation(System.out, 1);
+                System.out.println(method.getMethodName());
+                Summaries.printIndentation(System.out, 2);
+                System.out.println(method.getDescription());
+            }
+        }
+        System.out.println();
 
 
         int threadCount = 0;
 
+        // Iterate over submissions
         for (Submission submission : submissions) {
             if(submission.isDisqualified())
                 continue;
 
             File submissionDir = new File(compileDir, submission.getSlug());
 
-            // Load classes
+            // Create a new ClassLoader
             URLClassLoader classLoader;
             try {
                 classLoader = new URLClassLoader(new URL[]{ submissionDir.toURI().toURL() });
@@ -37,27 +57,43 @@ public class TestStage {
                 submission.setDisqualified(true);
                 continue;
             }
-            for (File testFile : testFiles) {
-                String testFileName = testFile.getName();
-                String testClassName = testFileName.substring(0, testFileName.length() - ".java".length());
 
+            // Go over test suites
+            for (TestSuite testSuite : testSuites) {
+                // Load test suite class
                 Class testClass = null;
-                String testClassCanonical = Metadata.getPackageNameForSubmission(submission) + "." + testClassName;
+                String testClassCanonical = Metadata.getPackageNameForSubmission(submission) + "." + testSuite.getName();
                 try {
                     testClass = classLoader.loadClass(testClassCanonical);
                     System.out.println("Loaded class: " + testClass.getCanonicalName());
                 } catch (Throwable e) {
-                    submission.addProblem(createTestSuiteFailProblem(testClassName));
+                    e.printStackTrace(System.out);
+                    submission.addProblem(createTestSuiteFailProblem(
+                            testSuite.getName(),
+                            "Class not loaded (possibly due to compilation error in test class when compiled with submission sources)"
+                    ));
                     continue;
                 }
 
 
+                // Run & await tests in a new thread
                 Class finalTestClass = testClass;
                 int threadNum = threadCount++;
                 System.out.println("Thread " + threadNum + " is starting");
+                final PrintStream sout = System.out;
                 Thread testThread = new Thread(() -> {
                     System.out.println("Testing submission " + submission.getSlug());
-                    runTests(finalTestClass, submission);
+
+                    // Mute System.out
+                    System.setOut(new PrintStream(new OutputStream() {
+                        public void write(int b) {
+                            //DO NOTHING
+                        }
+                    }));
+
+                    runTests(testSuite, finalTestClass, submission);
+
+                    System.setOut(sout);
                     System.out.println("Thread " + threadNum + " is done");
                 });
                 testThread.setPriority(Thread.MIN_PRIORITY);
@@ -67,10 +103,14 @@ public class TestStage {
                 } catch (InterruptedException e) {
                     System.out.println("Main thread interrupted");
                 }
+                System.setOut(sout);
                 if(testThread.isAlive()) {
                     testThread.stop();
                     System.out.println("Warning: Forcefully killed test thread for " + submission.getSlug());
-                    submission.addProblem(createTestSuiteFailProblem(testClassName));
+                    submission.addProblem(createTestSuiteFailProblem(
+                            testSuite.getName(),
+                            "Timeout (some tests might not have been run)"
+                    ));
                 }
             }
         }
@@ -78,47 +118,77 @@ public class TestStage {
         return submissions;
     }
 
-    private static void runTests(Class testClass, Submission submission) {
-        SummaryGeneratingListener listener = new SummaryGeneratingListener();
+    private static List<TestSuite> readTestSuites(List<File> testFiles) {
+        List<TestSuite> testSuites = new ArrayList<>(testFiles.size());
 
+        for (File testFile : testFiles) {
+            List<TestMethod> methods = new ArrayList<>();
+            try (BufferedReader reader = new BufferedReader(new FileReader(testFile))) {
+                while (true) {
+                    String line = reader.readLine();
+                    if (line == null) break;
+                    if (line.trim().equals("@Test")) {
+                        String description = reader.readLine()
+                                .trim()
+                                .substring(2)
+                                .trim();
+                        String methodName = reader.readLine()
+                                .replaceAll("^\\s*public\\s+void\\s+(\\w+)\\([\\w\\s,]*\\).*$", "$1");
+                        methods.add(new TestMethod(methodName, description));
+                    }
+                }
+                testSuites.add(new TestSuite(methods, testFile));
+            } catch (IOException e) {
+                e.printStackTrace(System.out);
+                System.out.println("Unable to parse test file: " + testFile.getAbsolutePath());
+            }
+        }
+
+        return testSuites;
+    }
+
+    private static void runTests(TestSuite testSuiteData, Class testClass, Submission submission) {
+        // Set up JUnit launcher
         LauncherDiscoveryRequest launcherDiscoveryRequest = LauncherDiscoveryRequestBuilder.request()
                 .selectors(DiscoverySelectors.selectClass(testClass))
                 .build();
         Launcher launcher = LauncherFactory.create();
-//        TestPlan testPlan = launcher.discover(launcherDiscoveryRequest);
-        launcher.registerTestExecutionListeners(listener);
-        PrintStream sout = System.out;
-        System.setOut(new PrintStream(new OutputStream() {
-            public void write(int b) {
-                //DO NOTHING
-            }
-        }));
-        launcher.execute(launcherDiscoveryRequest);
-        System.setOut(sout);
 
-        TestExecutionSummary summary = listener.getSummary();
-        for (TestExecutionSummary.Failure failure : summary.getFailures()) {
-//            failure.getException().printStackTrace();
-            Optional<TestSource> _testSource = failure.getTestIdentifier().getSource();
-            if(_testSource.isPresent()) {
-                TestSource testSource = _testSource.get();
-                if(testSource instanceof MethodSource) {
-                    MethodSource methodSource = (MethodSource) testSource;
-                    Problem problem = createTestFailProblem(testClass.getSimpleName(), methodSource.getMethodName());
-                    System.out.println("FAIL: " + problem.summary);
-                    submission.addProblem(problem);
+        // Set up execution listener that captures successful tests
+        Set<String> succeededTests = new HashSet<>();
+        launcher.registerTestExecutionListeners(new TestExecutionListener() {
+            @Override
+            public void executionSkipped(TestIdentifier testIdentifier, String reason) {
+                System.out.println("Skipped: " + testIdentifier.getDisplayName());
+            }
+
+            @Override
+            public void executionFinished(TestIdentifier testIdentifier, TestExecutionResult testExecutionResult) {
+                System.out.println("Finished: " + testIdentifier.getDisplayName() + ", " + testExecutionResult.getStatus());
+
+                if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
+                    TestSource source = testIdentifier.getSource().orElse(null);
+                    if (source instanceof MethodSource) {
+                        succeededTests.add(testIdentifier.getDisplayName());
+                    }
                 }
             }
-        }
-        System.out.print("Tests (run/failed/skipped): ");
-        System.out.println(summary.getTestsSucceededCount() + "/" + summary.getTestsFailedCount() + "/" + summary.getTestsSkippedCount());
+        });
+
+        // Actually execute tests
+        launcher.execute(launcherDiscoveryRequest);
+
+        // Generate problems in submission for failed tests
+        testSuiteData.getMethods().stream()
+                .filter(testMethod -> !succeededTests.contains(testMethod.getMethodName()))
+                .forEach(failedTestMethod -> submission.addProblem(createTestFailProblem(testSuiteData.getName(), failedTestMethod)));
     }
     
-    private static Problem createTestSuiteFailProblem(String testSuiteName) {
-        return new Problem(Stage.TEST, Problem.Type.TEST_SUITE_FAILURE, testSuiteName);
+    private static Problem createTestSuiteFailProblem(String testSuiteName, String reason) {
+        return new Problem(Stage.TEST, Problem.Type.TEST_SUITE_FAILURE, testSuiteName + "\n" + reason);
     }
 
-    private static Problem createTestFailProblem(String testSuiteName, String testName) {
-        return new Problem(Stage.TEST, Problem.Type.TEST_FAILURE, testSuiteName + "::" + testName);
+    private static Problem createTestFailProblem(String testSuiteName, TestMethod method) {
+        return new Problem(Stage.TEST, Problem.Type.TEST_FAILURE, testSuiteName + "::" + method.getMethodName() + "\n  " + method.getDescription());
     }
 }
