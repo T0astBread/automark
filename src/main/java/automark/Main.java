@@ -44,6 +44,7 @@ public class Main {
                 BypassDownload.run(commandLineArgs.workingDir);
                 break;
             case GUI:
+                UI.setRunningInGUIEnvironment(true);
                 GUI.start(commandLineArgs);
                 break;
         }
