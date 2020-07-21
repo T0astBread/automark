@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="manual-style.css">
+<link rel="stylesheet" href="styles/manual-style.css">
 
 # Automark
 
