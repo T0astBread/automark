@@ -26,3 +26,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:1.7.21'  // logging for Spark
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+task generateHTMLManual(type: Exec) {
+    workingDir rootDir
+    commandLine "pandoc", "-f", "gfm", "-t", "html5", "README.md", "-o", "src/main/resources/automark/gui/manual.html"
+}

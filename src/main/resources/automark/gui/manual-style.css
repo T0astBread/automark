@@ -1,0 +1,52 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    width: 70ch;
+    padding: .5em;
+    margin: 0;
+	background: #f6f6f6;
+	font-family: monospace;
+	font-size: 1.2em;
+}
+
+code {
+    padding: .1em .2em;
+    border-radius: 5px;
+    background: #dadada;
+}
+
+section > * {
+    margin-left: 2rem;
+}
+
+section > h2 {
+    margin-top: 2em;
+    margin-left: 0;
+    text-transform: uppercase;
+}
+
+.subcommand {
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    background: white;
+    border: 1px solid #999;
+}
+
+.subcommand > :first-child {
+    margin-top: 0;
+}
+
+.subcommand > :last-child {
+    margin-bottom: 0;
+}
+
+.subcommand h4:first-of-type {
+    color: #f5627f;
+}
+
+.subcommand h4:nth-of-type(2) {
+    color: #5dd496;
+}

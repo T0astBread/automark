@@ -1,11 +1,17 @@
+<link rel="stylesheet" href="manual-style.css">
+
 # Automark
 
 Automark is a batch processing program to automatically download,
 test and grade Java programming assignments and homework.
 
-To achieve this, automark implements a so-called "pipeline":
-a program divided into several sequential steps - "stages" - that are
-dependent on the result of the respective previous stage.
+<section>
+
+## Operation
+
+Automark implements a so-called "pipeline": a program divided into
+several sequential steps - "stages" - that are dependent on the
+result of the respective previous stage.
 
 These are the stages of Automark in order of execution:
 
@@ -38,8 +44,13 @@ The JPLAG stage has some special behavior. See [JPlag](#jplag).
 
 For security considerations see [Security](#security).
 
+</section>
+
+<section>
 
 ## Subcommands
+
+<div class="subcommand">
 
 ### `status`
 Displays details about the current state of submissions.
@@ -55,6 +66,9 @@ submissions in the middle, stages on the left and terminal output on
 the right. You can click on stages on the left to view the status
 after that specific stage.
 
+</div>
+
+<div class="subcommand">
 
 ### `rollback`
 Deletes the results of every stage after __and including__ a specified
@@ -75,6 +89,10 @@ automark rollback <stage>
 Select the target stage on the left and click the "Rollback" button
 in the toolbar.
 
+</div>
+
+
+<div class="subcommand">
 
 ### `mark-resolved`
 
@@ -86,17 +104,17 @@ recently completed stage so if you roll back, this will be reverted.
 
 #### CLI
 ```
-automark mark-resolved <slug> [--problem <problem_identifier>] [--requalify]
+automark mark-resolved <slug> [--problem <ident>] [--requalify]
 ```
 
 `<slug>` is the slug of the submission to operate on or `_`
 (underscore) to operate on all submissions.
 
-`--problem <problem_identifier>` must be present if you want to
-mark one or more problems as resolved. `<problem_identifier>` is
-either the name of the problem (f.ex. `EXCEPTION` to match `EXCEPTION`
-problems) or the numerical position of a single problem in the output
-of `automark status`. If a problem name is specified, all matching
+`--problem <ident>` must be present if you want to
+mark one or more problems as resolved. `<ident>` is either the name
+of the problem (f.ex. `EXCEPTION` to match `EXCEPTION` problems) or
+the numerical position of a single problem in the output of
+`automark status`. If a problem name is specified, all matching
 problems are marked as resolved.
 
 `--requalify` must be present if you want to re-include a submission
@@ -120,6 +138,10 @@ Clicking on a checked checkbox in the "trash can" column re-includes
 a submission that has been excluded from further problem due to a
 critical problem.
 
+</div>
+
+
+<div class="subcommand">
 
 ### `mark-plagiarized`
 
@@ -151,6 +173,11 @@ corresponding to the PLAGIARIZED problem in the problem rainbow.
 Reverting mark-plagiarized in the GUI is as simple as clicking the
 same checkbox again.
 
+</div>
+
+</section>
+
+<section>
 
 ## Problems
 
@@ -174,6 +201,9 @@ after a stage, you have the following choices:
 * __mark-resolved:__ Manually correct the problems and use
   [mark-resolved](#mark-resolved).
 
+</section>
+
+<section>
 
 ## JPlag
 
@@ -208,6 +238,9 @@ and [mark-plagiarized](#mark-plagiarized).
 Execution always stops after the JPLAG stage in oder to allow you to
 review the JPlag report and mark plagiarized submissions.
 
+</section>
+
+<section>
 
 ## Security
 
@@ -219,3 +252,5 @@ technologies such as virtual machines.
 Alternatively, you can also review every submission before any code
 is compiled or run. This is always possible since execution always
 stops after the JPLAG stage.
+
+</section>
