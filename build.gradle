@@ -31,3 +31,5 @@ task generateHTMLManual(type: Exec) {
     workingDir rootDir
     commandLine "pandoc", "-f", "gfm", "-t", "html5", "README.md", "-o", "src/main/resources/automark/gui/manual.html"
 }
+
+build.dependsOn generateHTMLManual
