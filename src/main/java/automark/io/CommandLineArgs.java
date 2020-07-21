@@ -58,6 +58,9 @@ public class CommandLineArgs {
             } else if ("--no-open-browser".equals(token)) {
                 openBrowser = false;
 
+            } else if ("--help".equals(token) || "-h".equals(token)) {
+                subcommand = Subcommand.MANUAL;
+
             } else if (subcommand != null) {
                 throw new UserFriendlyException("Subcommand has already been specified as " + subcommand.name() + "(tried to specify again as " + token + ")");
 
@@ -152,5 +155,6 @@ public class CommandLineArgs {
         MARK_PLAGIARIZED,
         BYPASS_DOWNLOAD,
         GUI,
+        MANUAL,
     }
 }

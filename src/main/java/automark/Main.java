@@ -47,6 +47,10 @@ public class Main {
                 UI.setRunningInGUIEnvironment(true);
                 GUI.start(commandLineArgs);
                 break;
+            case MANUAL:
+                UI.setRunningInGUIEnvironment(true);
+                GUI.startManual(commandLineArgs);
+                break;
         }
     }
 }

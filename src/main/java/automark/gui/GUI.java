@@ -172,6 +172,27 @@ public class GUI {
         }
     }
 
+    public static void startManual(CommandLineArgs commandLineArgs) {
+        Spark.initExceptionHandler((e) -> {
+            JOptionPane.showMessageDialog(null, e.getMessage(), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        });
+
+        Spark.staticFiles.location("/automark/gui");
+
+        Spark.init();
+
+        if(commandLineArgs.openBrowser) {
+            String url = "http://localhost:4567/manual.html";
+            try {
+                Desktop.getDesktop().browse(URI.create(url));
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Failed to open " + url + " in browser");
+            }
+        }
+    }
+
     private static String generateSecret() {
         return Integer.toString((int) (Math.random() * Integer.MAX_VALUE));
     }
