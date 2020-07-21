@@ -33,7 +33,7 @@ body {
     margin-right: .25em;
 }
 
-#toolbar span {
+#toolbar span, #toolbar a {
     align-self: center;
     margin-left: .25em;
     margin-right: 1em;

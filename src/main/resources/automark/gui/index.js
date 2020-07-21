@@ -252,6 +252,7 @@ class App extends Component {
                 <button onClick="${() => this.rollback()}" disabled="${isRunning || nothingCompleted || selectedSubmissions == null}">
                     <span class="symbol">⬅️</span>️ Rollback
                 </button>
+                <a href="manual.html">Help</a>
                 <div class="spacer"></div>
                 <h1>Automark</h1>
             </div>
