@@ -52,7 +52,27 @@ For security considerations see [Security](#security).
 
 <div class="subcommand">
 
+### `run`
+
+Starts execution from the last completed stage.
+
+This is also what's run when no subcommand is specified.
+
+#### CLI
+```
+automark [run]
+```
+
+#### GUI
+
+Click the "Run" button in the toolbar.
+
+</div>
+
+<div class="subcommand">
+
 ### `status`
+
 Displays details about the current state of submissions.
 
 #### CLI
@@ -61,6 +81,7 @@ automark status
 ```
 
 #### GUI
+
 The whole GUI acts as a "status dashboard". You can overview
 submissions in the middle, stages on the left and terminal output on
 the right. You can click on stages on the left to view the status
@@ -71,6 +92,7 @@ after that specific stage.
 <div class="subcommand">
 
 ### `rollback`
+
 Deletes the results of every stage after __and including__ a specified
 target stage and marks these stages as not completed.
 
@@ -172,6 +194,40 @@ corresponding to the PLAGIARIZED problem in the problem rainbow.
 
 Reverting mark-plagiarized in the GUI is as simple as clicking the
 same checkbox again.
+
+</div>
+
+<div class="subcommand">
+
+### `gui`
+
+Starts the GUI.
+
+#### CLI
+```
+automark gui
+```
+
+#### GUI
+
+Not possible
+
+</div>
+
+<div class="subcommand">
+
+### `manual`
+
+Shows this manual in the browser.
+
+#### CLI
+```
+automark <manual|--help|-h>
+```
+
+#### GUI
+
+Click the "Help" link in the toolbar.
 
 </div>
 
