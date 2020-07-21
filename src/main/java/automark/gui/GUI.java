@@ -108,6 +108,11 @@ public class GUI {
         Spark.get("/working-dir", (request, response) -> workingDir.get().getName());
 
 
+        Spark.get("/working-dir-is-project", (request, response) -> {
+            return new File(workingDir.get(), "config.properties").exists();
+        });
+
+
         Spark.post("/working-dir", (request, response) -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setCurrentDirectory(workingDir.get());

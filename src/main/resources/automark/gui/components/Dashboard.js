@@ -10,7 +10,7 @@ import {
 
 
 export default class DashboardScreen extends Component {
-    constructor() {
+    constructor({ onDashboardStageSelect }) {
         super()
         this.state = {
             workingDir: "",
@@ -23,7 +23,7 @@ export default class DashboardScreen extends Component {
 
         this.loadData()
             .then(() => {
-                if(this.state.selectedStage == null)
+                if(this.state.selectedStage == null && location.hash !== "#new")
                     this.selectLastCompletedStage()
                 this.loadWorkingDir()
             })
@@ -35,6 +35,10 @@ export default class DashboardScreen extends Component {
                     ...this.state,
                     selectedStage,
                 })
+                if (onDashboardStageSelect)
+                    onDashboardStageSelect(selectedStage.name)
+            } else if (location.hash === "#latest") {
+                this.selectLastCompletedStage()
             }
         })
     }
@@ -196,7 +200,7 @@ export default class DashboardScreen extends Component {
         this.loadData()
     }
 
-    render() {
+    render({ onRequestNewProject }) {
         const {
             workingDir,
             runWebSocket,
@@ -216,6 +220,9 @@ export default class DashboardScreen extends Component {
         return html`
             <title>${workingDir} - Automark</title>
             <div id="toolbar">
+                <button onClick="${onRequestNewProject}" disabled="${isRunning}">
+                    <span class="symbol">📝</span> New
+                </button>
                 <button onClick="${() => this.chooseWorkingDir()}" disabled="${isRunning}">
                     <span class="symbol">📂</span> Open
                 </button>
