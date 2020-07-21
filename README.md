@@ -5,6 +5,11 @@
 Automark is a batch processing program to automatically download,
 test and grade Java programming assignments and homework.
 
+To build or run Automark, a Java 11 JDK (or later) is required.
+OpenJDK is recommended. A JRE is not sufficient, since it does not
+include development tools needed for compiling and testing
+submissions.
+
 <section>
 
 ## Operation
