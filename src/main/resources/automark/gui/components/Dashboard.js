@@ -6,6 +6,8 @@ import {
     STAGES_REVERSE,
     PROBLEM_TYPES,
     stageFromHash,
+    hashIsNew,
+    hashIsEdit,
  } from "/utils.js"
 
 
@@ -24,7 +26,7 @@ export default class DashboardScreen extends Component {
 
         this.loadData()
             .then(() => {
-                if(this.state.selectedStage == null && location.hash !== "#new")
+                if(this.state.selectedStage == null && !(hashIsNew() || hashIsEdit()))
                     this.selectLastCompletedStage()
                 this.loadWorkingDir()
             })
@@ -201,7 +203,7 @@ export default class DashboardScreen extends Component {
         this.loadData()
     }
 
-    render({ onRequestNewProject, defaultWorkingDir }) {
+    render({ onRequestConfigEdit, defaultWorkingDir }) {
         const {
             workingDir,
             runWebSocket,
@@ -230,8 +232,11 @@ export default class DashboardScreen extends Component {
         return html`
             <title>${workingDir} - Automark</title>
             <div id="toolbar">
-                <button onClick="${onRequestNewProject}" disabled="${isRunning}">
-                    <span class="symbol">📝</span> New
+                <button onClick="${() => onRequestConfigEdit('new')}" disabled="${isRunning}">
+                    <span class="symbol">➕️</span> New
+                </button>
+                <button onClick="${() => onRequestConfigEdit('edit')}" disabled="${isRunning}">
+                    <span class="symbol">📝</span> Edit
                 </button>
                 <button onClick="${() => this.chooseWorkingDir()}" disabled="${isRunning}">
                     <span class="symbol">📂</span> Open

@@ -14,8 +14,8 @@ const SOURCE_FILES_REGEX = "(\\w+\\.java(,\\s*\\w+\\.java)*)?"
 
 
 export default class ConfigEditor extends Component {
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
         this.state = {
             assignmentName: null,
             assignmentID: null,
@@ -49,16 +49,24 @@ export default class ConfigEditor extends Component {
 //            formIsValid: false,
 //        }
         this.formRef = createRef()
+
+        if (props.type === "edit")
+            this.loadConfig()
     }
 
-    componentDidUpdate() {
-        // Validate in case new fields have been rendered
-        const formIsValid = this.formIsValid()
-        if (formIsValid !== this.state.formIsValid) {
-            super.setState({
-                ...this.state,
-                formIsValid,
-            })
+    componentDidUpdate(prevProps) {
+        // Is this an "edit" type ConfigEditor that has just been un-hidden
+        if (this.props.type === "edit" && prevProps.hidden && !this.props.hidden) {
+            this.loadConfig()
+        } else {
+            // Validate in case new fields have been rendered
+            const formIsValid = this.formIsValid()
+            if (formIsValid !== this.state.formIsValid) {
+                super.setState({
+                    ...this.state,
+                    formIsValid,
+                })
+            }
         }
     }
 
@@ -124,16 +132,25 @@ export default class ConfigEditor extends Component {
         return formElem != null && formElem.checkValidity()
     }
 
+    async loadConfig() {
+        const response = await (await fetch("/config")).json()
+        console.log("GET /config", response)
+        this.setState({
+            ...this.state,
+            ...response,
+        })
+    }
+
     async onConfirmClick(evt, onConfirm) {
         console.log("confirm")
         evt.preventDefault()
 
-        const response = await fetch("/new", {
+        const response = await fetch("/config", {
             method: "POST",
             body: JSON.stringify(this.state),
         })
         const text = await response.text()
-        console.log("POST /new", text)
+        console.log("POST /config", text)
         if (response.status !== 200) {
             alert(text)
         } else if (text.startsWith("true ")) {
@@ -141,7 +158,7 @@ export default class ConfigEditor extends Component {
         }
     }
 
-    render({ hidden, onClose, onConfirm }) {
+    render({ type, hidden, onClose, onConfirm }) {
         const {
             assignmentName,
             assignmentID,
@@ -160,50 +177,52 @@ export default class ConfigEditor extends Component {
         } = this.state
 
         return html`
-            <div class="${hidden ? 'hidden' : ''} screen assignment-editor-screen" id="assignment-editor-screen">
-                <h2>New Assignment</h2>
+            <div class="${hidden ? 'hidden' : ''} screen assignment-editor-screen" id="${type}_assignment-editor-screen">
+                <h2>${type === "edit" ? "Edit" : "New"} Assignment</h2>
                 <form ref="${this.formRef}">
                     <div class="form-body">
-                        <label for="pathInput" class="full">Assignment directory</label>
+                        <label for="${type}_pathInput" class="full">Assignment directory</label>
                         <input name="path"
-                            id="pathInput"
+                            id="${type}_pathInput"
                             class="has-choose-button"
                             defaultValue="${path}"
                             onInput="${this.onInputChange.bind(this)}"
                             minlength="1"
-                            required/>
+                            required
+                            disabled="${type === 'edit'}"/>
                         <button type="button"
                             class="choose"
+                            disabled="${type === 'edit'}"
                             onClick="${() => this.onPathSelectButtonClick('path')}">
                             Choose...
                         </button>
-                        <label for="assignmentNameInput">Assignment name</label>
+                        <label for="${type}_assignmentNameInput">Assignment name</label>
                         <input name="assignmentName"
-                            id="assignmentNameInput"
+                            id="${type}_assignmentNameInput"
                             defaultValue="${assignmentName}"
                             onInput="${this.onInputChange.bind(this)}"
                             minlength="1"
                             required/>
-                        <label for="assignmentIDInput">Assignment ID (numeric)</label>
+                        <label for="${type}_assignmentIDInput">Assignment ID (numeric)</label>
                         <input name="assignmentID"
-                            id="assignmentIDInput"
+                            id="${type}_assignmentIDInput"
                             defaultValue="${assignmentID}"
                             onInput="${this.onInputChange.bind(this)}"
                             pattern="${ASSIGNMENT_ID_REGEX}"
                             inputmode="number"
                             required/>
-                        <label for="jplagLanguageInput" class="more-distance-top">JPlag language</label>
+                        <label for="${type}_jplagLanguageInput" class="more-distance-top">JPlag language</label>
                         <select name="jplagLanguage"
-                            id="jplagLanguageInput"
+                            id="${type}_jplagLanguageInput"
                             class="more-distance-top"
                             onChange="${this.onJPlagLanguageSelect.bind(this)}">
                             ${JPLAG_LANGUAGES.map(lang => html`
                                 <option value="${lang}" selected="${jplagLanguage === lang}">${lang}</option>
                             `)}
                         </select>
-                        <label for="jplagRepositoryInput" class="full">JPlag repository path</label>
+                        <label for="${type}_jplagRepositoryInput" class="full">JPlag repository path</label>
                         <input name="jplagRepository"
-                            id="jplagRepositoryInput"
+                            id="${type}_jplagRepositoryInput"
                             class="has-choose-button"
                             defaultValue="${jplagRepository}"
                             onInput="${this.onInputChange.bind(this)}"
@@ -214,21 +233,21 @@ export default class ConfigEditor extends Component {
                             onClick="${() => this.onPathSelectButtonClick('jplagRepository')}">
                             Choose...
                         </button>
-                        <label for="sourceFilesInput" class="full">Source file names (comma-seperated Java files)</label>
+                        <label for="${type}_sourceFilesInput" class="full">Source files (comma-seperated Java file names)</label>
                         <input name="sourceFiles"
-                            id="sourceFilesInput"
+                            id="${type}_sourceFilesInput"
                             defaultValue="${sourceFiles}"
                             onInput="${this.onInputChange.bind(this)}"
                             pattern="${SOURCE_FILES_REGEX}"/>
-                        <label id="download-stage-label" class="more-distance-top">Download stage to use</label>
+                        <label id="${type}_download-stage-label" class="more-distance-top">Download stage to use</label>
                         <div class="radio-option">
                             <input type="radio"
                                 name="downloadStage"
                                 value="moodle"
-                                id="download-stage-scraper"
+                                id="${type}_download-stage-scraper"
                                 checked="${downloadStage === 'moodle'}"
                                 onChange="${evt => this.onDownloadStageRadioChange(evt)}"/>
-                            <label for="download-stage-scraper">
+                            <label for="${type}_download-stage-scraper">
                                 <strong>MoodleScraperStage (recommended)</strong>
                                 <div class="details">
                                     Automatically scrapes submission and student data (like email addresses) from Moodle
@@ -239,10 +258,10 @@ export default class ConfigEditor extends Component {
                             <input type="radio"
                                 name="downloadStage"
                                 value="bypass"
-                                id="download-stage-bypass"
+                                id="${type}_download-stage-bypass"
                                 checked="${downloadStage === 'bypass'}"
                                 onChange="${evt => this.onDownloadStageRadioChange(evt)}"/>
-                            <label for="download-stage-bypass">
+                            <label for="${type}_download-stage-bypass">
                                 <strong>BypassDownloadStage</strong>
                                 <div class="details">
                                     <small>Use this if MoodleScraperStage is broken.</small>
@@ -253,18 +272,18 @@ export default class ConfigEditor extends Component {
                         </div>
 
                         ${downloadStage !== "moodle" ? '' : html`
-                            <label for="moodleBaseURLInput" class="wide more-distance-top">Moodle base URL</label>
+                            <label for="${type}_moodleBaseURLInput" class="wide more-distance-top">Moodle base URL</label>
                             <input type="url"
                                 name="moodleBaseURL"
-                                id="moodleBaseURLInput"
+                                id="${type}_moodleBaseURLInput"
                                 class="more-distance-top"
                                 defaultValue="${moodleBaseURL}"
                                 onInput="${this.onInputChange.bind(this)}"
                                 required/>
-                            <label for="moodleTeachersInput" class="full">Email addresses of Moodle teachers (comma-seperated)</label>
+                            <label for="${type}_moodleTeachersInput" class="full">Email addresses of Moodle teachers (comma-seperated)</label>
                             <small class="full">No mail will be sent to these addresses.</small>
                             <input name="moodleTeachers"
-                                id="moodleTeachersInput"
+                                id="${type}_moodleTeachersInput"
                                 type="email"
                                 multiple
                                 defaultValue="${moodleTeachers}"/>
@@ -272,14 +291,14 @@ export default class ConfigEditor extends Component {
                             <div class="check-option more-distance-top">
                                 <input type="checkbox"
                                     name="moodleUsernameEnabled"
-                                    id="moodleUsernameEnabledInput"
+                                    id="${type}_moodleUsernameEnabledInput"
                                     checked="${moodleUsernameEnabled}"
                                     onChange="${this.onFieldToggleChange.bind(this)}"/>
-                                <label for="moodleUsernameEnabledInput" class="wide">Save Moodle username in config</label>
+                                <label for="${type}_moodleUsernameEnabledInput" class="wide">Save Moodle username in config</label>
                             </div>
-                            <label for="moodleUsernameInput" class="less-distance">Moodle username</label>
+                            <label for="${type}_moodleUsernameInput" class="less-distance">Moodle username</label>
                             <input name="moodleUsername"
-                                id="moodleUsernameInput"
+                                id="${type}_moodleUsernameInput"
                                 class="less-distance"
                                 disabled="${!moodleUsernameEnabled}"
                                 defaultValue="${moodleUsername}"
@@ -289,15 +308,15 @@ export default class ConfigEditor extends Component {
                             <div class="check-option">
                                 <input type="checkbox"
                                     name="moodlePasswordEnabled"
-                                    id="moodlePasswordEnabledInput"
+                                    id="${type}_moodlePasswordEnabledInput"
                                     checked="${moodlePasswordEnabled}"
                                     onChange="${this.onFieldToggleChange.bind(this)}"/>
-                                <label for="moodlePasswordEnabledInput" class="wide">Save Moodle password in config</label>
+                                <label for="${type}_moodlePasswordEnabledInput" class="wide">Save Moodle password in config</label>
                             </div>
-                            <label for="moodlePasswordInput" class="less-distance">Moodle password</label>
+                            <label for="${type}_moodlePasswordInput" class="less-distance">Moodle password</label>
                             <input type="password"
                                 name="moodlePassword"
-                                id="moodlePasswordInput"
+                                id="${type}_moodlePasswordInput"
                                 class="less-distance"
                                 disabled="${!moodlePasswordEnabled}"
                                 defaultValue="${moodlePassword}"

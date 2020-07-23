@@ -60,7 +60,7 @@ public class Config {
     }
 
     public static List<String> asList(String configProp) {
-        return List.of(configProp.split("\\s+"));
+        return List.of(configProp.split(",\\s+"));
     }
 
     public static File asFile(String configProp) {

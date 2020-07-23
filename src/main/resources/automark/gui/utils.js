@@ -32,6 +32,12 @@ const stageFromName = stageName => STAGES.find(s => s.name === stageName)
 const stageFromHash = () => stageFromName(location.hash.substr(1))
 
 
+const getHash = () => location.hash.substr(1)
+
+const hashIsNew = () => getHash() === "new"
+const hashIsEdit = () => getHash() === "edit"
+
+
 // Initialize htm with Preact
 const html = htm.bind(h)
 
@@ -45,4 +51,7 @@ export {
     PROBLEM_TYPES,
     stageFromName,
     stageFromHash,
+    getHash,
+    hashIsNew,
+    hashIsEdit,
 }

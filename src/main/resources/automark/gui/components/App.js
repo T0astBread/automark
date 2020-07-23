@@ -1,12 +1,12 @@
-import { Component, html } from "/utils.js"
+import {
+    Component,
+    html,
+    hashIsNew,
+    hashIsEdit,
+} from "/utils.js"
 import Dashboard from "./Dashboard.js"
 import ConfigEditor from "./ConfigEditor.js"
 
-
-const hashIsCreationWizard = () => {
-    const hashStr = location.hash.substr(1)
-    return hashStr === "new"
-}
 
 export default class App extends Component {
     constructor() {
@@ -14,19 +14,20 @@ export default class App extends Component {
         this.state = {
             hasLoaded: false,
             workingDirIsProject: true,
-            creationWizardIsOpen: hashIsCreationWizard(),
+            newScreenIsOpen: hashIsNew(),
+            editScreenIsOpen: hashIsEdit(),
             lastSelectedStageFromDashboard: null,
             lastWorkingDirFromConfigEditor: null,
         }
 
         window.addEventListener("hashchange", evt => {
-        const _hashIsCreationWizard = hashIsCreationWizard()
-            if (!_hashIsCreationWizard && !this.state.workingDirIsProject) {
-                location.hash = "#new"
+            if (!this.state.workingDirIsProject && !hashIsNew()) {
+                location.hash = "#start"
             } else {
                 this.setState({
                     ...this.state,
-                    creationWizardIsOpen: _hashIsCreationWizard,
+                    newScreenIsOpen: hashIsNew(),
+                    editScreenIsOpen: hashIsEdit(),
                 })
             }
         })
@@ -56,9 +57,9 @@ export default class App extends Component {
         console.log(workingDirIsProject, text)
     }
 
-    setCreationWizardOpen(creationWizardIsOpen) {
-        if (creationWizardIsOpen) {
-            location.hash = "#new"
+    setConfigEditorOpen(type, isOpen) {
+        if (isOpen) {
+            location.hash = `${type}`
         } else if (this.state.lastSelectedStageFromDashboard) {
             location.hash = `#${this.state.lastSelectedStageFromDashboard}`
         } else {
@@ -79,25 +80,31 @@ export default class App extends Component {
             ...this.state,
             lastWorkingDirFromConfigEditor: newWorkingDir,
         })
-        this.setCreationWizardOpen(false)
+        this.setConfigEditorOpen(null, false)
     }
 
     render() {
         const {
             hasLoaded,
             workingDirIsOpen,
-            creationWizardIsOpen,
+            newScreenIsOpen,
+            editScreenIsOpen,
             lastWorkingDirFromConfigEditor,
         } = this.state
 
         return html`
             <${Dashboard}
-                onRequestNewProject="${() => this.setCreationWizardOpen(true)}"
+                onRequestConfigEdit="${type => this.setConfigEditorOpen(type, true)}"
                 onDashboardStageSelect="${newStageName => this.onDashboardStageSelect(newStageName)}"
                 defaultWorkingDir="${lastWorkingDirFromConfigEditor}"/>
-            <div class="curtain ${(workingDirIsOpen || creationWizardIsOpen) ? 'up' : ''} ${hasLoaded ? '' : 'no-anim'}">
-                <${ConfigEditor} hidden="${!creationWizardIsOpen}"
-                    onClose="${() => this.setCreationWizardOpen(false)}"
+            <div class="curtain ${(workingDirIsOpen || newScreenIsOpen || editScreenIsOpen) ? 'up' : ''} ${hasLoaded ? '' : 'no-anim'}">
+                <${ConfigEditor} type="new"
+                    hidden="${!newScreenIsOpen}"
+                    onClose="${() => this.setConfigEditorOpen('new', false)}"
+                    onConfirm="${this.onConfigEditorConfirm.bind(this)}"/>
+                <${ConfigEditor} type="edit"
+                    hidden="${!editScreenIsOpen}"
+                    onClose="${() => this.setConfigEditorOpen('edit', false)}"
                     onConfirm="${this.onConfigEditorConfirm.bind(this)}"/>
             </div>
         `

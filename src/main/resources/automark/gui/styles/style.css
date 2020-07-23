@@ -331,7 +331,8 @@ h1 {
 }
 
 .assignment-editor-screen,
-#assignment-editor-screen {
+#new_assignment-editor-screen,
+#edit_assignment-editor-screen {
     display: flex;
     flex-direction: column;
     padding-bottom: 0;
@@ -383,7 +384,8 @@ h1 {
     grid-column: span 1;
 }
 
-.assignment-editor-screen #download-stage-label,
+.assignment-editor-screen #new_download-stage-label,
+.assignment-editor-screen #edit_download-stage-label,
 .assignment-editor-screen .form-body .radio-option,
 .assignment-editor-screen .form-body .check-option {
     grid-column: span 4;
