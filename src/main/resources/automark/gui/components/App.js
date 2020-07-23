@@ -1,5 +1,6 @@
 import { Component, html } from "/utils.js"
 import Dashboard from "./Dashboard.js"
+import ConfigEditor from "./ConfigEditor.js"
 
 
 const hashIsCreationWizard = () => {
@@ -84,7 +85,7 @@ export default class App extends Component {
                 onRequestNewProject="${() => this.setCreationWizardOpen(true)}"
                 onDashboardStageSelect=${newStageName => this.onDashboardStageSelect(newStageName)}/>
             <div class="curtain ${(workingDirIsOpen || creationWizardIsOpen) ? 'up' : ''} ${hasLoaded ? '' : 'no-anim'}">
-                <button onClick="${() => this.setCreationWizardOpen(false)}">Up</button>
+                <${ConfigEditor} hidden="${!creationWizardIsOpen}" />
             </div>
         `
     }

@@ -305,6 +305,7 @@ h1 {
     left: 0;
     transform: translateY(-100%);
     z-index: 9;
+    overflow: auto;
     background: #ddd;
 }
 
@@ -314,4 +315,90 @@ h1 {
 
 .curtain:not(.no-anim) {
     transition: transform .125s cubic-bezier(.86,0,.07,1);
+}
+
+.curtain > .screen {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    margin: auto;
+    padding: 1em;
+}
+
+.curtain > .screen > :first-child {
+    margin-top: 0;
+}
+
+#assignment-editor-screen form {
+    display: grid;
+    grid-template-columns: 10rem repeat(3, 1fr);
+    gap: .5em .1em;
+}
+
+#assignment-editor-screen form > * {
+    grid-column: span 2;
+    display: inline-block;
+    min-width: 0;
+    margin: auto 0;
+}
+
+#assignment-editor-screen form > .wide {
+    grid-column: span 1;
+}
+
+#assignment-editor-screen form > .wide + * {
+    grid-column: span 3;
+}
+
+#assignment-editor-screen form > .full,
+#assignment-editor-screen form > .full + * {
+    grid-column: span 4;
+}
+
+#assignment-editor-screen form > .full {
+    margin-top:
+}
+
+#assignment-editor-screen form > .full + *,
+#assignment-editor-screen form > .less-distance {
+    margin-top: -.35rem;
+}
+
+#assignment-editor-screen #download-stage-label {
+    grid-column: span 4;
+}
+
+#assignment-editor-screen form .radio-option,
+#assignment-editor-screen form .check-option {
+    grid-column: span 4;
+}
+
+#assignment-editor-screen form .radio-option {
+    margin-top: .5em;
+}
+
+#assignment-editor-screen form .radio-option input {
+    width: 1rem;
+    margin: 0;
+    margin-left: .75rem;
+    margin-right: .5rem;
+}
+
+#assignment-editor-screen form .radio-option .details {
+    margin-top: .1em;
+    margin-left: 2.25rem;
+}
+
+#assignment-editor-screen form .check-option input {
+    margin: 0;
+    margin-right: .5rem;
+}
+
+#assignment-editor-screen form > .more-distance-top {
+    margin-top: 1.5rem;
+}
+
+#assignment-editor-screen form > .more-distance-bottom {
+    margin-bottom: 1.5rem;
 }
