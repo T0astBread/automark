@@ -133,12 +133,15 @@ export default class ConfigEditor extends Component {
     }
 
     async loadConfig() {
-        const response = await (await fetch("/config")).json()
-        console.log("GET /config", response)
-        this.setState({
-            ...this.state,
-            ...response,
-        })
+        const response = await fetch("/config")
+        if (response.status === 200) {
+            const body = await response.json()
+            console.log("GET /config", body)
+            this.setState({
+                ...this.state,
+                ...body,
+            })
+        }
     }
 
     async onConfirmClick(evt, onConfirm) {
