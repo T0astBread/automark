@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 
-public class DownloadStage {
+public class MoodleScraperStage {
     public static List<Submission> run(File workingDir, Properties config) throws UserFriendlyException {
         List<Submission> submissions;
         String assignmentID = config.getProperty(Config.ASSIGNMENT_ID);

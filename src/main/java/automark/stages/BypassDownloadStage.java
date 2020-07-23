@@ -1,4 +1,4 @@
-package automark.subcommands;
+package automark.stages;
 
 import automark.*;
 import automark.io.*;
@@ -11,8 +11,8 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
 
-public class BypassDownload {
-    public static void run(File workingDir) throws UserFriendlyException {
+public class BypassDownloadStage {
+    public static List<Submission> run(File workingDir, Properties config) throws UserFriendlyException {
         String zipFileName = findSubmissionZipName(workingDir);
         File zipFile = new File(workingDir, zipFileName);
 
@@ -118,7 +118,8 @@ public class BypassDownload {
             submissions.add(submission);
         }
 
-        Metadata.saveSubmissions(submissions, Metadata.getMetadataFile(workingDir, Stage.DOWNLOAD));
+        return submissions;
+//        Metadata.saveSubmissions(submissions, Metadata.getMetadataFile(workingDir, Stage.DOWNLOAD));
     }
 
     private static String findSubmissionZipName(File workingDir) throws UserFriendlyException {

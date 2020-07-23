@@ -83,7 +83,10 @@ public class Run {
     ) throws UserFriendlyException {
         switch (stage) {
             case DOWNLOAD:
-                return DownloadStage.run(workingDir, config);
+                if ("bypass".equals(config.get(Config.DOWNLOAD_STAGE)))
+                    return BypassDownloadStage.run(workingDir, config);
+                else
+                    return MoodleScraperStage.run(workingDir, config);
             case UNZIP:
                 return UnzipStage.run(workingDir, config, submissions);
             case EXTRACT:

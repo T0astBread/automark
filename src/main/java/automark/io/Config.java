@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.*;
 
 public class Config {
+    public static final String DOWNLOAD_STAGE = "downloadStage";
     public static final String ASSIGNMENT_ID = "assignmentID";
     public static final String ASSIGNMENT_NAME = "assignmentName";
     public static final String JPLAG_LANGUAGE = "jplagLanguage";
