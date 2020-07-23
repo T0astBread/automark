@@ -119,7 +119,6 @@ public class BypassDownloadStage {
         }
 
         return submissions;
-//        Metadata.saveSubmissions(submissions, Metadata.getMetadataFile(workingDir, Stage.DOWNLOAD));
     }
 
     private static String findSubmissionZipName(File workingDir) throws UserFriendlyException {
