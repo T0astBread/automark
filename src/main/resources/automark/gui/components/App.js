@@ -3,6 +3,9 @@ import {
     html,
     hashIsNew,
     hashIsEdit,
+    hashIsStart,
+    NEW_ASSIGNMENT_TITLE,
+    OPEN_ASSIGNMENT_TITLE,
 } from "/utils.js"
 import Dashboard from "./Dashboard.js"
 import ConfigEditor from "./ConfigEditor.js"
@@ -16,20 +19,23 @@ export default class App extends Component {
             workingDirIsProject: true,
             newScreenIsOpen: hashIsNew(),
             editScreenIsOpen: hashIsEdit(),
+            startScreenIsOpen: hashIsStart(),
             lastSelectedStageFromDashboard: null,
             lastWorkingDirFromConfigEditor: null,
         }
 
         window.addEventListener("hashchange", evt => {
-            if (!this.state.workingDirIsProject && !hashIsNew()) {
+            if (hashIsStart()) {
+                this.loadWorkingDir()
+            } else if (!this.state.workingDirIsProject && !hashIsNew()) {
                 location.hash = "#start"
-            } else {
-                this.setState({
-                    ...this.state,
-                    newScreenIsOpen: hashIsNew(),
-                    editScreenIsOpen: hashIsEdit(),
-                })
             }
+            this.setState({
+                ...this.state,
+                newScreenIsOpen: hashIsNew(),
+                editScreenIsOpen: hashIsEdit(),
+                startScreenIsOpen: hashIsStart(),
+            })
         })
 
         this.loadWorkingDir()
@@ -47,14 +53,29 @@ export default class App extends Component {
             alert(text)
         }
         const workingDirIsProject = text === "true"
-        if (!workingDirIsProject) {
-            this.setState({
-                ...this.state,
-                workingDirIsProject: false,
-            })
-            location.hash = "#new"
-        }
+        this.setState({
+            ...this.state,
+            workingDirIsProject,
+        })
+        location.hash = workingDirIsProject ? "#latest" : "#start"
+
         console.log(workingDirIsProject, text)
+    }
+
+    async chooseWorkingDir() {
+        const response = await fetch("/working-dir", {
+            method: "POST"
+        })
+        const text = await response.text()
+        console.log(text)
+        if (response.status !== 200) {
+            alert(text)
+        }
+        this.setState({
+            ...this.state,
+            lastWorkingDirFromConfigEditor: text,
+        })
+        this.loadWorkingDir()
     }
 
     setConfigEditorOpen(type, isOpen) {
@@ -85,10 +106,11 @@ export default class App extends Component {
 
     render() {
         const {
+            workingDirIsProject,
             hasLoaded,
-            workingDirIsOpen,
             newScreenIsOpen,
             editScreenIsOpen,
+            startScreenIsOpen,
             lastWorkingDirFromConfigEditor,
         } = this.state
 
@@ -97,7 +119,21 @@ export default class App extends Component {
                 onRequestConfigEdit="${type => this.setConfigEditorOpen(type, true)}"
                 onDashboardStageSelect="${newStageName => this.onDashboardStageSelect(newStageName)}"
                 defaultWorkingDir="${lastWorkingDirFromConfigEditor}"/>
-            <div class="curtain ${(workingDirIsOpen || newScreenIsOpen || editScreenIsOpen) ? 'up' : ''} ${hasLoaded ? '' : 'no-anim'}">
+            <div id="start-screen" class="curtain ${!workingDirIsProject || startScreenIsOpen ? 'up' : ''} ${hasLoaded ? '' : 'no-anim'}">
+                <div>
+                    <h1>Automark</h1>
+                    <p>No assignment is open</p>
+                    <button title="${NEW_ASSIGNMENT_TITLE}"
+                        onClick="${() => this.setConfigEditorOpen('new', true)}">
+                        <span class="symbol">➕️</span> New
+                    </button>
+                    <button title="${OPEN_ASSIGNMENT_TITLE}"
+                        onClick="${() => this.chooseWorkingDir()}">
+                        <span class="symbol">📂</span> Open
+                    </button>
+                </div>
+            </div>
+            <div class="curtain ${(newScreenIsOpen || editScreenIsOpen) ? 'up' : ''} ${hasLoaded ? '' : 'no-anim'}">
                 <${ConfigEditor} type="new"
                     hidden="${!newScreenIsOpen}"
                     onClose="${() => this.setConfigEditorOpen('new', false)}"

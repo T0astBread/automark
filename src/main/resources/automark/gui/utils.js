@@ -36,6 +36,11 @@ const getHash = () => location.hash.substr(1)
 
 const hashIsNew = () => getHash() === "new"
 const hashIsEdit = () => getHash() === "edit"
+const hashIsStart = () => getHash() === "start"
+
+
+const NEW_ASSIGNMENT_TITLE = "Create a new assignment"
+const OPEN_ASSIGNMENT_TITLE = "Open an existing assignment"
 
 
 // Initialize htm with Preact
@@ -54,4 +59,7 @@ export {
     getHash,
     hashIsNew,
     hashIsEdit,
+    hashIsStart,
+    NEW_ASSIGNMENT_TITLE,
+    OPEN_ASSIGNMENT_TITLE,
 }

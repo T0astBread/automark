@@ -8,6 +8,9 @@ import {
     stageFromHash,
     hashIsNew,
     hashIsEdit,
+    hashIsStart,
+    NEW_ASSIGNMENT_TITLE,
+    OPEN_ASSIGNMENT_TITLE,
  } from "/utils.js"
 
 
@@ -26,7 +29,7 @@ export default class DashboardScreen extends Component {
 
         this.loadData()
             .then(() => {
-                if(this.state.selectedStage == null && !(hashIsNew() || hashIsEdit()))
+                if(this.state.selectedStage == null && !(hashIsNew() || hashIsEdit() || hashIsStart()))
                     this.selectLastCompletedStage()
                 this.loadWorkingDir()
             })
@@ -76,7 +79,19 @@ export default class DashboardScreen extends Component {
             ...this.state,
             workingDir: text,
         })
-        await this.loadData(true)
+
+        const response2 = await fetch("/working-dir-is-project")
+        const text2 = await response2.text()
+        console.log("working-dir-is-project:", text2)
+        if (response2.status !== 200) {
+            alert(text2)
+        }
+        const workingDirIsProject = text2 === "true"
+
+        if (workingDirIsProject)
+            await this.loadData(true)
+        else
+            location.hash = "#start"
     }
 
     async loadData(jumpToLastSuccessful) {
@@ -232,13 +247,16 @@ export default class DashboardScreen extends Component {
         return html`
             <title>${workingDir} - Automark</title>
             <div id="toolbar">
-                <button onClick="${() => onRequestConfigEdit('new')}" disabled="${isRunning}">
+                <button title="${NEW_ASSIGNMENT_TITLE}"
+                    onClick="${() => onRequestConfigEdit('new')}" disabled="${isRunning}">
                     <span class="symbol">➕️</span> New
                 </button>
-                <button onClick="${() => onRequestConfigEdit('edit')}" disabled="${isRunning}">
+                <button title="Edit the currently open assignment"
+                    onClick="${() => onRequestConfigEdit('edit')}" disabled="${isRunning}">
                     <span class="symbol">📝</span> Edit
                 </button>
-                <button onClick="${() => this.chooseWorkingDir()}" disabled="${isRunning}">
+                <button title="${OPEN_ASSIGNMENT_TITLE}"
+                    onClick="${() => this.chooseWorkingDir()}" disabled="${isRunning}">
                     <span class="symbol">📂</span> Open
                 </button>
                 <span>${workingDir}</span>
