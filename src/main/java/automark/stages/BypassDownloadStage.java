@@ -79,6 +79,7 @@ public class BypassDownloadStage {
 
             if (submissionZipInUnzip1 == null) {
                 submission.addProblem(Problem.createInvalidSubmissionFile(Stage.DOWNLOAD, "Unable to find .zip file"));
+                submission.setDisqualified(true);
             } else {
                 File submissionZipInDownload = new File(downloadDir, slug + ".zip");
                 try {
@@ -115,6 +116,7 @@ public class BypassDownloadStage {
                     null
             );
             submission.addProblem(Problem.createNotSubmittedProblem());
+            submission.setDisqualified(true);
             submissions.add(submission);
         }
 
