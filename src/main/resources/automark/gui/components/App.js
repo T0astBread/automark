@@ -85,7 +85,8 @@ export default class App extends Component {
                 onRequestNewProject="${() => this.setCreationWizardOpen(true)}"
                 onDashboardStageSelect=${newStageName => this.onDashboardStageSelect(newStageName)}/>
             <div class="curtain ${(workingDirIsOpen || creationWizardIsOpen) ? 'up' : ''} ${hasLoaded ? '' : 'no-anim'}">
-                <${ConfigEditor} hidden="${!creationWizardIsOpen}" />
+                <${ConfigEditor} hidden="${!creationWizardIsOpen}"
+                    onClose="${() => this.setCreationWizardOpen(false)}"/>
             </div>
         `
     }

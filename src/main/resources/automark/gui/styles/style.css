@@ -323,82 +323,110 @@ h1 {
     height: 100%;
     max-width: 500px;
     margin: auto;
-    padding: 1em;
+    padding: 1rem;
 }
 
 .curtain > .screen > :first-child {
     margin-top: 0;
 }
 
-#assignment-editor-screen form {
+.assignment-editor-screen,
+#assignment-editor-screen {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+}
+
+.assignment-editor-screen form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.assignment-editor-screen .form-body {
     display: grid;
     grid-template-columns: 10rem repeat(3, 1fr);
     gap: .5em .1em;
 }
 
-#assignment-editor-screen form > * {
+.assignment-editor-screen .form-body > * {
     grid-column: span 2;
     display: inline-block;
     min-width: 0;
     margin: auto 0;
 }
 
-#assignment-editor-screen form > .wide {
+.assignment-editor-screen .form-body > .wide {
     grid-column: span 1;
 }
 
-#assignment-editor-screen form > .wide + * {
+.assignment-editor-screen .form-body > .wide + * {
     grid-column: span 3;
 }
 
-#assignment-editor-screen form > .full,
-#assignment-editor-screen form > .full + * {
+.assignment-editor-screen .form-body > .full,
+.assignment-editor-screen .form-body > .full + * {
     grid-column: span 4;
 }
 
-#assignment-editor-screen form > .full {
+.assignment-editor-screen .form-body > .full {
     margin-top:
 }
 
-#assignment-editor-screen form > .full + *,
-#assignment-editor-screen form > .less-distance {
+.assignment-editor-screen .form-body > .full + *,
+.assignment-editor-screen .form-body > .less-distance {
     margin-top: -.35rem;
 }
 
-#assignment-editor-screen #download-stage-label {
+.assignment-editor-screen #download-stage-label,
+.assignment-editor-screen .form-body .radio-option,
+.assignment-editor-screen .form-body .check-option {
     grid-column: span 4;
 }
 
-#assignment-editor-screen form .radio-option,
-#assignment-editor-screen form .check-option {
-    grid-column: span 4;
-}
-
-#assignment-editor-screen form .radio-option {
+.assignment-editor-screen .form-body .radio-option {
     margin-top: .5em;
 }
 
-#assignment-editor-screen form .radio-option input {
+.assignment-editor-screen .form-body .radio-option input {
     width: 1rem;
     margin: 0;
     margin-left: .75rem;
     margin-right: .5rem;
 }
 
-#assignment-editor-screen form .radio-option .details {
+.assignment-editor-screen .form-body .radio-option .details {
     margin-top: .1em;
     margin-left: 2.25rem;
 }
 
-#assignment-editor-screen form .check-option input {
+.assignment-editor-screen .form-body .check-option input {
     margin: 0;
     margin-right: .5rem;
 }
 
-#assignment-editor-screen form > .more-distance-top {
+.assignment-editor-screen .form-body > .more-distance-top {
     margin-top: 1.5rem;
 }
 
-#assignment-editor-screen form > .more-distance-bottom {
+.assignment-editor-screen .form-body > .more-distance-bottom {
     margin-bottom: 1.5rem;
+}
+
+.assignment-editor-screen form .button-row {
+    grid-column: span 4;
+    position: sticky;
+    bottom: 0;
+    padding: 1rem 0;
+    background: #ddd;
+}
+
+.assignment-editor-screen form button {
+    display: inline-block;
+    width: 0;
+    min-width: 10em;
+}
+
+.assignment-editor-screen form button:nth-of-type(2) {
+    float: right;
 }
