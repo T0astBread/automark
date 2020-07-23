@@ -16,7 +16,6 @@ public class Config {
     public static final String MOODLE_TEACHERS = "moodleTeachers";
     public static final String MOODLE_USERNAME = "moodleUsername";
     public static final String SOURCE_FILES = "sourceFiles";
-    public static final String TEST_FILES = "testFiles";
 
 
     public static Properties loadConfig(File workingDir) throws UserFriendlyException {
@@ -42,8 +41,7 @@ public class Config {
                 JPLAG_REPOSITORY,
                 MOODLE_BASE_URL,
                 MOODLE_TEACHERS,
-                SOURCE_FILES,
-                TEST_FILES
+                SOURCE_FILES
         };
 
         List<String> missingRequiredProperties = new ArrayList<>();
