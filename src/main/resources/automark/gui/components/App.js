@@ -16,6 +16,7 @@ export default class App extends Component {
             workingDirIsProject: true,
             creationWizardIsOpen: hashIsCreationWizard(),
             lastSelectedStageFromDashboard: null,
+            lastWorkingDirFromConfigEditor: null,
         }
 
         window.addEventListener("hashchange", evt => {
@@ -73,20 +74,31 @@ export default class App extends Component {
         })
     }
 
+    onConfigEditorConfirm(newWorkingDir) {
+        this.setState({
+            ...this.state,
+            lastWorkingDirFromConfigEditor: newWorkingDir,
+        })
+        this.setCreationWizardOpen(false)
+    }
+
     render() {
         const {
             hasLoaded,
             workingDirIsOpen,
             creationWizardIsOpen,
+            lastWorkingDirFromConfigEditor,
         } = this.state
 
         return html`
             <${Dashboard}
                 onRequestNewProject="${() => this.setCreationWizardOpen(true)}"
-                onDashboardStageSelect=${newStageName => this.onDashboardStageSelect(newStageName)}/>
+                onDashboardStageSelect="${newStageName => this.onDashboardStageSelect(newStageName)}"
+                defaultWorkingDir="${lastWorkingDirFromConfigEditor}"/>
             <div class="curtain ${(workingDirIsOpen || creationWizardIsOpen) ? 'up' : ''} ${hasLoaded ? '' : 'no-anim'}">
                 <${ConfigEditor} hidden="${!creationWizardIsOpen}"
-                    onClose="${() => this.setCreationWizardOpen(false)}"/>
+                    onClose="${() => this.setCreationWizardOpen(false)}"
+                    onConfirm="${this.onConfigEditorConfirm.bind(this)}"/>
             </div>
         `
     }

@@ -369,13 +369,18 @@ h1 {
     grid-column: span 4;
 }
 
-.assignment-editor-screen .form-body > .full {
-    margin-top:
-}
-
 .assignment-editor-screen .form-body > .full + *,
+.assignment-editor-screen .form-body > .full + .has-choose-button + button,
 .assignment-editor-screen .form-body > .less-distance {
     margin-top: -.35rem;
+}
+
+.assignment-editor-screen .form-body > .full + .has-choose-button {
+    grid-column: span 3;
+}
+
+.assignment-editor-screen .form-body > .full + .has-choose-button + button {
+    grid-column: span 1;
 }
 
 .assignment-editor-screen #download-stage-label,
@@ -421,7 +426,7 @@ h1 {
     background: #ddd;
 }
 
-.assignment-editor-screen form button {
+.assignment-editor-screen form button:not(.choose) {
     display: inline-block;
     width: 0;
     min-width: 10em;

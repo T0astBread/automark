@@ -62,6 +62,16 @@ export default class ConfigEditor extends Component {
         }
     }
 
+    async onPathSelectButtonClick(fieldName) {
+        const response = await (await fetch("/dir-choice")).text()
+        if (response !== "false") {
+            this.setState({
+                ...this.state,
+                [fieldName]: response,
+            })
+        }
+    }
+
     onInputChange(evt) {
         const { name, value } = evt.currentTarget
         console.log(name, value)
@@ -114,13 +124,24 @@ export default class ConfigEditor extends Component {
         return formElem != null && formElem.checkValidity()
     }
 
-    onConfirmClick(evt, onClose) {
+    async onConfirmClick(evt, onConfirm) {
         console.log("confirm")
-        onClose()
         evt.preventDefault()
+
+        const response = await fetch("/new", {
+            method: "POST",
+            body: JSON.stringify(this.state),
+        })
+        const text = await response.text()
+        console.log("POST /new", text)
+        if (response.status !== 200) {
+            alert(text)
+        } else if (text.startsWith("true ")) {
+            onConfirm(text.substr("true ".length))
+        }
     }
 
-    render({ hidden, onClose }) {
+    render({ hidden, onClose, onConfirm }) {
         const {
             assignmentName,
             assignmentID,
@@ -146,10 +167,16 @@ export default class ConfigEditor extends Component {
                         <label for="pathInput" class="full">Assignment directory</label>
                         <input name="path"
                             id="pathInput"
+                            class="has-choose-button"
                             defaultValue="${path}"
                             onInput="${this.onInputChange.bind(this)}"
                             minlength="1"
                             required/>
+                        <button type="button"
+                            class="choose"
+                            onClick="${() => this.onPathSelectButtonClick('path')}">
+                            Choose...
+                        </button>
                         <label for="assignmentNameInput">Assignment name</label>
                         <input name="assignmentName"
                             id="assignmentNameInput"
@@ -177,10 +204,16 @@ export default class ConfigEditor extends Component {
                         <label for="jplagRepositoryInput" class="full">JPlag repository path</label>
                         <input name="jplagRepository"
                             id="jplagRepositoryInput"
+                            class="has-choose-button"
                             defaultValue="${jplagRepository}"
                             onInput="${this.onInputChange.bind(this)}"
                             minlength="1"
                             required/>
+                        <button type="button"
+                            class="choose"
+                            onClick="${() => this.onPathSelectButtonClick('jplagRepository')}">
+                            Choose...
+                        </button>
                         <label for="sourceFilesInput" class="full">Source file names (comma-seperated Java files)</label>
                         <input name="sourceFiles"
                             id="sourceFilesInput"
@@ -281,7 +314,7 @@ export default class ConfigEditor extends Component {
                             Cancel
                         </button>
                         <button type="submit"
-                            onClick="${evt => this.onConfirmClick(evt, onClose)}"
+                            onClick="${evt => this.onConfirmClick(evt, onConfirm)}"
                             disabled="${!formIsValid}">
                             Confirm
                         </button>

@@ -10,10 +10,11 @@ import {
 
 
 export default class DashboardScreen extends Component {
-    constructor({ onDashboardStageSelect }) {
+    constructor({ onDashboardStageSelect, defaultWorkingDir }) {
         super()
         this.state = {
             workingDir: "",
+            defaultWorkingDir,
             selectedStage: stageFromHash(),
             runWebSocket: null,
             submissionsData: {},
@@ -200,7 +201,7 @@ export default class DashboardScreen extends Component {
         this.loadData()
     }
 
-    render({ onRequestNewProject }) {
+    render({ onRequestNewProject, defaultWorkingDir }) {
         const {
             workingDir,
             runWebSocket,
@@ -208,6 +209,15 @@ export default class DashboardScreen extends Component {
             submissionsData,
             expandedSubmissions,
         } = this.state
+        if (defaultWorkingDir !== this.state.defaultWorkingDir) {
+            this.setState({
+                ...this.state,
+                defaultWorkingDir,
+            })
+            this.loadWorkingDir()
+                .then(() => this.loadData())
+        }
+
         const isRunning = runWebSocket != null
 
         const selectedSubmissions = selectedStage == null ? null : submissionsData[selectedStage.name]
