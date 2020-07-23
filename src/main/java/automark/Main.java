@@ -8,6 +8,9 @@ public class Main {
     private static final int E_USER_ERROR = 1;
 
     public static void main(String[] args) {
+        // Improves Swing font rendering
+        System.setProperty("awt.useSystemAAFontSettings", "lcd");
+
         try {
             main0(args);
         } catch (UserFriendlyException e) {
