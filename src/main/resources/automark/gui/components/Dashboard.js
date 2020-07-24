@@ -46,6 +46,10 @@ export default class DashboardScreen extends Component {
             } else if (location.hash === "#latest") {
                 this.selectLastCompletedStage()
             }
+
+            // This is probably not the right place for that but
+            // I just want the workingDir to stay in sync
+            this.loadWorkingDir()
         })
     }
 
