@@ -35,12 +35,11 @@ public class Config {
 
     public static List<String> getMissingRequiredProperties(Properties config) {
         final String[] REQUIRED_CONFIG_PROPERTIES = {
+                DOWNLOAD_STAGE,
                 ASSIGNMENT_ID,
                 ASSIGNMENT_NAME,
                 JPLAG_LANGUAGE,
                 JPLAG_REPOSITORY,
-                MOODLE_BASE_URL,
-                MOODLE_TEACHERS,
                 SOURCE_FILES
         };
 
