@@ -26,7 +26,7 @@ public class Main {
 
         switch (commandLineArgs.subcommand) {
             case RUN:
-                Run.run(commandLineArgs.workingDir);
+                Run.run(commandLineArgs.workingDir, commandLineArgs.enableInsecureDebugMechanisms);
                 break;
             case STATUS:
                 Status.run(commandLineArgs.workingDir);

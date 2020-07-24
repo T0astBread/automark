@@ -10,14 +10,14 @@ import java.util.*;
 import java.util.stream.*;
 
 public class Run {
-    public static void run(File workingDir) throws UserFriendlyException {
-        run(workingDir, false);
+    public static void run(File workingDir, boolean enableInsecureDebugMechanisms) throws UserFriendlyException {
+        runAndStop(workingDir, enableInsecureDebugMechanisms, false);
     }
 
     /**
      * @return should call again?
      */
-    public static boolean run(File workingDir, boolean stopAfterOneStage) throws UserFriendlyException {
+    public static boolean runAndStop(File workingDir, boolean enableInsecureDebugMechanisms, boolean stopAfterOneStage) throws UserFriendlyException {
         Properties config = Config.loadConfig(workingDir);
 
         List<String> missingRequiredProperties = Config.getMissingRequiredProperties(config);
@@ -44,7 +44,7 @@ public class Run {
             System.out.println("Running stage " + stage.name());
             System.out.println();
 
-            submissions = runStage(stage, workingDir, config, submissions);
+            submissions = runStage(stage, workingDir, config, submissions, enableInsecureDebugMechanisms);
             Metadata.saveSubmissions(submissions, Metadata.getMetadataFile(workingDir, stage));
 
             List<Submission> submissionsWithNewProblems = submissions.stream()
@@ -79,7 +79,8 @@ public class Run {
             Stage stage,
             File workingDir,
             Properties config,
-            List<Submission> submissions
+            List<Submission> submissions,
+            boolean enableInsecureDebugMechanisms
     ) throws UserFriendlyException {
         switch (stage) {
             case DOWNLOAD:

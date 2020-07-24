@@ -51,7 +51,7 @@ public class RunWebSocketHandler {
         System.setOut(new PrintStream(new WebSocketOutputStream(session)));
 
         try {
-            while (Run.run(workingDir, true)) {
+            while (Run.runAndStop(workingDir, commandLineArgs.enableInsecureDebugMechanisms, true)) {
                 session.getRemote().sendString("s");
             }
         } catch (UserFriendlyException e) {
