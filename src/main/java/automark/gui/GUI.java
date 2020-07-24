@@ -197,6 +197,8 @@ public class GUI {
 
             bodyProps.remove("moodleUsernameEnabled");
             bodyProps.remove("moodlePasswordEnabled");
+            bodyProps.remove("smtpUsernameEnabled");
+            bodyProps.remove("smtpPasswordEnabled");
             bodyProps.remove("formIsValid");
 
             Set<String> nullKeys = new HashSet<>();

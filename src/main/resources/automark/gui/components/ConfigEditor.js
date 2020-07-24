@@ -29,6 +29,16 @@ export default class ConfigEditor extends Component {
             moodleUsername: null,
             moodlePasswordEnabled: false,
             moodlePassword: null,
+            emailStageEnabled: "true",
+            smtpHost: null,
+            smtpPort: "465",
+            smtpUsernameEnabled: true,
+            smtpUsername: null,
+            smtpPasswordEnabled: true,
+            smtpPassword: null,
+            smtpProtocol: "SMTPS",
+            smtpFromName: null,
+            smtpFromAddress: null,
             path: null,
             formIsValid: false,
         }
@@ -140,6 +150,7 @@ export default class ConfigEditor extends Component {
             this.setState({
                 ...this.state,
                 ...body,
+                emailStageEnabled: (`${body.emailStageEnabled}`).toLowerCase() === "true",
             })
         }
     }
@@ -175,6 +186,16 @@ export default class ConfigEditor extends Component {
             moodleUsername,
             moodlePasswordEnabled,
             moodlePassword,
+            emailStageEnabled,
+            smtpHost,
+            smtpPort,
+            smtpUsernameEnabled,
+            smtpUsername,
+            smtpPasswordEnabled,
+            smtpPassword,
+            smtpProtocol,
+            smtpFromName,
+            smtpFromAddress,
             path,
             formIsValid,
         } = this.state
@@ -327,6 +348,94 @@ export default class ConfigEditor extends Component {
                                 onInput="${this.onInputChange.bind(this)}"
                                 required="${moodlePasswordEnabled}"/>
                         `}
+
+                        <div class="check-option more-distance-top">
+                            <input type="checkbox"
+                                name="emailStageEnabled"
+                                id="${type}_emailStageEnabledInput"
+                                checked="${emailStageEnabled}"
+                                onChange="${this.onFieldToggleChange.bind(this)}"/>
+                            <label for="${type}_emailStageEnabledInput" class="wide">Enable EMAIL stage</label>
+                        </div>
+                        <label for="${type}_smtpHostInput" class="">SMTP host</label>
+                        <input name="smtpHost"
+                            id="${type}_smtpHostInput"
+                            defaultValue="${smtpHost}"
+                            onInput="${this.onInputChange.bind(this)}"
+                            disabled="${!emailStageEnabled}"
+                            required="${emailStageEnabled}"/>
+                        <label for="${type}_smtpPortInput">SMTP port</label>
+                        <input type="number"
+                            name="smtpPort"
+                            id="${type}_smtpPortInput"
+                            defaultValue="${smtpPort}"
+                            onInput="${this.onInputChange.bind(this)}"
+                            min="1"
+                            max="65535"
+                            disabled="${!emailStageEnabled}"
+                            required="${emailStageEnabled}"/>
+                        <label for="${type}_smtpProtocolInput">SMTP protocol</label>
+                        <select name="smtpProtocol"
+                            id="${type}_smtpProtocolInput"
+                            onChange="${this.onInputChange.bind(this)}"
+                            disabled="${!emailStageEnabled}">
+                            ${["SMTP", "SMTPS", "SMTP_TLS"].map(p => html`
+                                <option value="${p}" selected="${smtpProtocol === p}">${p}</option>
+                            `)}
+                        </select>
+
+                        <div class="check-option more-distance-top">
+                            <input type="checkbox"
+                                name="smtpUsernameEnabled"
+                                id="${type}_smtpUsernameEnabledInput"
+                                checked="${smtpUsernameEnabled}"
+                                onChange="${this.onFieldToggleChange.bind(this)}"
+                                disabled="${!emailStageEnabled}"/>
+                            <label for="${type}_smtpUsernameEnabledInput" class="wide">Save SMTP username in config</label>
+                        </div>
+                        <label for="${type}_smtpUsernameInput" class="less-distance">SMTP username</label>
+                        <input name="smtpUsername"
+                            id="${type}_smtpUsernameInput"
+                            class="less-distance"
+                            defaultValue="${smtpUsername}"
+                            onInput="${this.onInputChange.bind(this)}"
+                            disabled="${!emailStageEnabled || !smtpUsernameEnabled}"
+                            required="${emailStageEnabled && smtpUsernameEnabled}"/>
+                        <div class="check-option">
+                            <input type="checkbox"
+                                name="smtpPasswordEnabled"
+                                id="${type}_smtpPasswordEnabledInput"
+                                checked="${smtpPasswordEnabled}"
+                                onChange="${this.onFieldToggleChange.bind(this)}"
+                                disabled="${!emailStageEnabled}"/>
+                            <label for="${type}_smtpPasswordEnabledInput" class="wide">Save SMTP password in config</label>
+                        </div>
+                        <label for="${type}_smtpPasswordInput" class="less-distance">SMTP password</label>
+                        <input type="password"
+                            name="smtpPassword"
+                            id="${type}_smtpPasswordInput"
+                            class="less-distance"
+                            defaultValue="${smtpPassword}"
+                            onInput="${this.onInputChange.bind(this)}"
+                            disabled="${!emailStageEnabled || !smtpPasswordEnabled}"
+                            required="${emailStageEnabled && smtpPasswordEnabled}"/>
+
+                        <label for="${type}_smtpFromNameInput" class="more-distance-top">Email "From" Name</label>
+                        <input name="smtpFromName"
+                            id="${type}_smtpFromNameInput"
+                            class="more-distance-top"
+                            defaultValue="${smtpFromName}"
+                            onInput="${this.onInputChange.bind(this)}"
+                            disabled="${!emailStageEnabled}"
+                            required="${emailStageEnabled}"/>
+                        <label for="${type}_smtpFromAddressInput">Email "From" Address</label>
+                        <input type="email"
+                            name="smtpFromAddress"
+                            id="${type}_smtpFromAddressInput"
+                            defaultValue="${smtpFromAddress}"
+                            onInput="${this.onInputChange.bind(this)}"
+                            disabled="${!emailStageEnabled}"
+                            required="${emailStageEnabled}"/>
                     </div>
 
                     <div class="spacer"></div>
