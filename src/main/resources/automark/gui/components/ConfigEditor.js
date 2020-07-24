@@ -289,6 +289,7 @@ export default class ConfigEditor extends Component {
                                 id="${type}_moodleTeachersInput"
                                 type="email"
                                 multiple
+                                onInput="${this.onInputChange.bind(this)}"
                                 defaultValue="${moodleTeachers}"/>
 
                             <div class="check-option more-distance-top">
