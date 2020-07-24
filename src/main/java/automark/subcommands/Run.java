@@ -65,7 +65,7 @@ public class Run {
                 return false;
             }
 
-            if (stage == Stage.JPLAG)
+            if (stage == Stage.JPLAG || stage == Stage.SUMMARY)
                 return false;
 
             if (stopAfterOneStage)
