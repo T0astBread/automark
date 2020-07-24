@@ -102,6 +102,8 @@ public class Run {
                 return TestStage.run(workingDir, config, submissions);
             case SUMMARY:
                 return SummaryStage.run(workingDir, config, submissions);
+            case EMAIL:
+                return EmailStage.run(workingDir, config, submissions, enableInsecureDebugMechanisms);
             default:
                 throw new UserFriendlyException("Invalid state: Tried to execute a stage that isn't implemented: " + stage.name());
         }

@@ -16,6 +16,14 @@ public class Config {
     public static final String MOODLE_TEACHERS = "moodleTeachers";
     public static final String MOODLE_USERNAME = "moodleUsername";
     public static final String SOURCE_FILES = "sourceFiles";
+    public static final String EMAIL_STAGE_ENABLED = "emailStageEnabled";
+    public static final String SMTP_HOST = "smtpHost";
+    public static final String SMTP_PORT = "smtpPort";
+    public static final String SMTP_USERNAME = "smtpUsername";
+    public static final String SMTP_PASSWORD = "smtpPassword";
+    public static final String SMTP_PROTOCOL = "smtpProtocol";
+    public static final String SMTP_FROM_NAME = "smtpFromName";
+    public static final String SMTP_FROM_ADDRESS = "smtpFromAddress";
 
 
     public static Properties loadConfig(File workingDir) throws UserFriendlyException {
@@ -62,5 +70,13 @@ public class Config {
 
     public static File asFile(String configProp) {
         return new File(configProp);
+    }
+
+    public static int asInt(String configProp) {
+        return Integer.parseInt(configProp);
+    }
+
+    public static boolean asBoolean(String configProp) {
+        return Boolean.parseBoolean(configProp);
     }
 }

@@ -1,5 +1,13 @@
 package automark.models;
 
 public enum Stage {
-    DOWNLOAD, UNZIP, EXTRACT, JPLAG, PREPARE_COMPILE, COMPILE, TEST, SUMMARY;
+    DOWNLOAD,
+    UNZIP,
+    EXTRACT,
+    JPLAG,
+    PREPARE_COMPILE,
+    COMPILE,
+    TEST,
+    SUMMARY,
+    EMAIL,
 }

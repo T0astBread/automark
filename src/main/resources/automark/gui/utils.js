@@ -10,6 +10,7 @@ const STAGES = [
     {name: "COMPILE", niceName: "Compile"},
     {name: "TEST", niceName: "Test"},
     {name: "SUMMARY", niceName: "Summary"},
+    {name: "EMAIL", niceName: "Email"},
 ]
 
 const STAGES_REVERSE = [...STAGES].reverse()
