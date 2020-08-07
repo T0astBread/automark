@@ -272,7 +272,7 @@ after a stage, you have the following choices:
 
 After submissions are run through JPlag, they are copied to a special
 folder called the JPlag repository. The JPlag repository is a
-historic collections of all submissions for any given assignment and
+historic collection of all submissions for any given assignment and
 is used to detect plagiarism from previous years' submissions.
 
 The JPlag repo location is specified using the `jplagRepository` key in
