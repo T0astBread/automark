@@ -32,7 +32,12 @@ public class GUI {
         final String permanentSecret = generateSecret();
 
         Spark.initExceptionHandler((e) -> {
-            JOptionPane.showMessageDialog(null, e.getMessage(), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+            JFrame frame = new JFrame();
+            frame.setTitle("Ignore me");
+            frame.setAlwaysOnTop(true);
+            frame.setVisible(true);
+            JOptionPane.showMessageDialog(frame, e.getMessage(), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+            frame.setVisible(false);
             e.printStackTrace();
         });
 
@@ -132,10 +137,15 @@ public class GUI {
                 }
             });
 
-            if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            JFrame frame = new JFrame();
+            frame.setTitle("Ignore me");
+            frame.setAlwaysOnTop(true);
+            frame.setVisible(true);
+            if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
                 workingDir.set(fileChooser.getSelectedFile());
                 webSocketHandler.setWorkingDir(workingDir.get());
             }
+            frame.setVisible(false);
             return workingDir.get().getName();
         });
 
@@ -257,9 +267,15 @@ public class GUI {
                 }
             });
 
-            if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            JFrame frame = new JFrame();
+            frame.setTitle("Ignore me");
+            frame.setAlwaysOnTop(true);
+            frame.setVisible(true);
+            if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+                frame.setVisible(false);
                 return fileChooser.getSelectedFile().getAbsolutePath();
             }
+            frame.setVisible(false);
 
             return "false";
         });
@@ -278,7 +294,12 @@ public class GUI {
 
     public static void startManual(CommandLineArgs commandLineArgs) {
         Spark.initExceptionHandler((e) -> {
-            JOptionPane.showMessageDialog(null, e.getMessage(), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+            JFrame frame = new JFrame();
+            frame.setTitle("Ignore me");
+            frame.setAlwaysOnTop(true);
+            frame.setVisible(true);
+            JOptionPane.showMessageDialog(frame, e.getMessage(), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+            frame.setVisible(false);
             e.printStackTrace();
         });
 
