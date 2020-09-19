@@ -12,36 +12,38 @@ const JPLAG_LANGUAGES = [
 const ASSIGNMENT_ID_REGEX = "\\d+"
 const SOURCE_FILES_REGEX = "(\\w+\\.java(,\\s*\\w+\\.java)*)?"
 
+const INITIAL_STATE = {
+	assignmentName: null,
+	jplagLanguage: "java19",
+	jplagRepository: null,
+	sourceFiles: "",
+	downloadStage: "moodle",
+	moodleAssignmentID: null,
+	moodleBaseURL: null,
+	moodleTeachers: "",
+	moodleUsernameEnabled: true,
+	moodleUsername: null,
+	moodlePasswordEnabled: false,
+	moodlePassword: null,
+	emailStageEnabled: "true",
+	smtpHost: null,
+	smtpPort: "465",
+	smtpUsernameEnabled: true,
+	smtpUsername: null,
+	smtpPasswordEnabled: true,
+	smtpPassword: null,
+	smtpProtocol: "SMTPS",
+	smtpFromName: null,
+	smtpFromAddress: null,
+	path: null,
+	formIsValid: false,
+}
+
 
 export default class ConfigEditor extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-            assignmentName: null,
-            jplagLanguage: "java19",
-            jplagRepository: null,
-            sourceFiles: "",
-            downloadStage: "moodle",
-            moodleAssignmentID: null,
-            moodleBaseURL: null,
-            moodleTeachers: "",
-            moodleUsernameEnabled: true,
-            moodleUsername: null,
-            moodlePasswordEnabled: false,
-            moodlePassword: null,
-            emailStageEnabled: "true",
-            smtpHost: null,
-            smtpPort: "465",
-            smtpUsernameEnabled: true,
-            smtpUsername: null,
-            smtpPasswordEnabled: true,
-            smtpPassword: null,
-            smtpProtocol: "SMTPS",
-            smtpFromName: null,
-            smtpFromAddress: null,
-            path: null,
-            formIsValid: false,
-        }
+        this.state = INITIAL_STATE
 //        this.state = {
 //            assignmentName: "Debug Assignment",
 //            jplagLanguage: "java19",
@@ -148,7 +150,7 @@ export default class ConfigEditor extends Component {
             const body = await response.json()
             console.log("GET /config", body)
             this.setState({
-                ...this.state,
+                ...INITIAL_STATE,
                 ...body,
                 emailStageEnabled: (`${body.emailStageEnabled}`).toLowerCase() === "true",
             })
