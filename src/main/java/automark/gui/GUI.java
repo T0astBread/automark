@@ -281,14 +281,25 @@ public class GUI {
         });
 
 
+        String url = "http://localhost:4567/auth?secret=" + initiationSecret;
         if(commandLineArgs.openBrowser) {
-            String url = "http://localhost:4567/auth?secret=" + initiationSecret;
             try {
                 Desktop.getDesktop().browse(URI.create(url));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Failed to open " + url + " in browser");
             }
+        } else {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    System.exit(-999);
+                }
+                System.out.println();
+                System.out.println("Open this URL in your browser: " + url);
+                System.out.println();
+            }).start();
         }
     }
 
