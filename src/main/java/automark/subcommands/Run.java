@@ -68,6 +68,29 @@ public class Run {
             if (stage == Stage.JPLAG || stage == Stage.SUMMARY)
                 return false;
 
+            if (stage == Stage.DOWNLOAD && submissions.size() == 0) {
+                System.out.println();
+                System.out.println();
+                System.out.println("WARNING: No submissions present after DOWNLOAD stage");
+                System.out.println();
+                System.out.println("This is usually an indicator that something went wrong.");
+                System.out.println();
+                if (usesBypassDownloadStage(config)) {
+                    System.out.println("Check your submissions ZIP file. Are there really no submissions or\n" +
+                            "is it invalid? Don't bother continuing in case there are no\n" +
+                            "submissions. The JPLAG stage won't work without submissions.");
+                } else {
+                    System.out.println("You might have specified an incorrect moodleBaseURL. The moodleBaseURL\n" +
+                            "config property should be the URL of your Moodle's login page minus\n" +
+                            "the \"/login/index.php\" at the end.");
+                    System.out.println();
+                    System.out.println("If your Moodle does not have a URL like that it's probably\nincompatible with Automark.");
+                }
+                System.out.println();
+                System.out.println();
+                return false;
+            }
+
             if (stopAfterOneStage)
                 return true;
         }
@@ -84,7 +107,7 @@ public class Run {
     ) throws UserFriendlyException {
         switch (stage) {
             case DOWNLOAD:
-                if ("bypass".equals(config.get(Config.DOWNLOAD_STAGE)))
+                if (usesBypassDownloadStage(config))
                     return BypassDownloadStage.run(workingDir, config);
                 else
                     return MoodleScraperStage.run(workingDir, config);
@@ -107,5 +130,9 @@ public class Run {
             default:
                 throw new UserFriendlyException("Invalid state: Tried to execute a stage that isn't implemented: " + stage.name());
         }
+    }
+
+    private static boolean usesBypassDownloadStage(Properties config) {
+        return "bypass".equals(config.get(Config.DOWNLOAD_STAGE));
     }
 }
