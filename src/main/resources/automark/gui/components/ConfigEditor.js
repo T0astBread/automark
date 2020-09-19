@@ -18,11 +18,11 @@ export default class ConfigEditor extends Component {
         super(props)
         this.state = {
             assignmentName: null,
-            assignmentID: null,
             jplagLanguage: "java19",
             jplagRepository: null,
             sourceFiles: "",
             downloadStage: "moodle",
+            moodleAssignmentID: null,
             moodleBaseURL: null,
             moodleTeachers: "",
             moodleUsernameEnabled: true,
@@ -44,11 +44,11 @@ export default class ConfigEditor extends Component {
         }
 //        this.state = {
 //            assignmentName: "Debug Assignment",
-//            assignmentID: "1234",
 //            jplagLanguage: "java19",
 //            jplagRepository: "/path/to/jplag-repo",
 //            sourceFiles: "MyFile1.java, File2.java",
 //            downloadStage: "moodle",
+//            moodleAssignmentID: "1234",
 //            moodleBaseURL: "https://www.school.com/mymoodle",
 //            moodleTeachers: "teacher1@school.com, other.teacher@school.com",
 //            moodleUsernameEnabled: true,
@@ -175,11 +175,11 @@ export default class ConfigEditor extends Component {
     render({ type, hidden, onClose, onConfirm }) {
         const {
             assignmentName,
-            assignmentID,
             jplagLanguage,
             jplagRepository,
             sourceFiles,
             downloadStage,
+            moodleAssignmentID,
             moodleBaseURL,
             moodleTeachers,
             moodleUsernameEnabled,
@@ -226,14 +226,6 @@ export default class ConfigEditor extends Component {
                             defaultValue="${assignmentName}"
                             onInput="${this.onInputChange.bind(this)}"
                             minlength="1"
-                            required/>
-                        <label for="${type}_assignmentIDInput">Assignment ID (numeric)</label>
-                        <input name="assignmentID"
-                            id="${type}_assignmentIDInput"
-                            defaultValue="${assignmentID}"
-                            onInput="${this.onInputChange.bind(this)}"
-                            pattern="${ASSIGNMENT_ID_REGEX}"
-                            inputmode="number"
                             required/>
                         <label for="${type}_jplagLanguageInput" class="more-distance-top">JPlag language</label>
                         <select name="jplagLanguage"
@@ -296,11 +288,19 @@ export default class ConfigEditor extends Component {
                         </div>
 
                         ${downloadStage !== "moodle" ? '' : html`
-                            <label for="${type}_moodleBaseURLInput" class="wide more-distance-top">Moodle base URL</label>
+							<label for="${type}_moodleAssignmentIDInput" class="more-distance-top">Moodle assignment ID (numeric)</label>
+							<input name="moodleAssignmentID"
+								id="${type}_moodleAssignmentIDInput"
+								class="more-distance-top"
+								defaultValue="${moodleAssignmentID}"
+								onInput="${this.onInputChange.bind(this)}"
+								pattern="${ASSIGNMENT_ID_REGEX}"
+								inputmode="number"
+								required/>
+                            <label for="${type}_moodleBaseURLInput" class="wide">Moodle base URL</label>
                             <input type="url"
                                 name="moodleBaseURL"
                                 id="${type}_moodleBaseURLInput"
-                                class="more-distance-top"
                                 defaultValue="${moodleBaseURL}"
                                 onInput="${this.onInputChange.bind(this)}"
                                 required/>

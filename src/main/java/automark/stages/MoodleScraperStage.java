@@ -12,7 +12,7 @@ import java.util.stream.*;
 public class MoodleScraperStage {
     public static List<Submission> run(File workingDir, Properties config) throws UserFriendlyException {
         List<Submission> submissions;
-        String assignmentID = config.getProperty(Config.ASSIGNMENT_ID);
+        String assignmentID = config.getProperty(Config.MOODLE_ASSIGNMENT_ID);
 
         try (MoodleSession moodleSession = new MoodleSession(config.getProperty(Config.MOODLE_BASE_URL))) {
             File downloadsDir = Metadata.mkStageDir(Stage.DOWNLOAD, workingDir);

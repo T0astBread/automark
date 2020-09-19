@@ -7,10 +7,10 @@ import java.util.*;
 
 public class Config {
     public static final String DOWNLOAD_STAGE = "downloadStage";
-    public static final String ASSIGNMENT_ID = "assignmentID";
     public static final String ASSIGNMENT_NAME = "assignmentName";
     public static final String JPLAG_LANGUAGE = "jplagLanguage";
     public static final String JPLAG_REPOSITORY = "jplagRepository";
+    public static final String MOODLE_ASSIGNMENT_ID = "moodleAssignmentID";
     public static final String MOODLE_BASE_URL = "moodleBaseURL";
     public static final String MOODLE_PASSWORD = "moodlePassword";
     public static final String MOODLE_TEACHERS = "moodleTeachers";
@@ -44,7 +44,6 @@ public class Config {
     public static List<String> getMissingRequiredProperties(Properties config) {
         final String[] REQUIRED_CONFIG_PROPERTIES = {
                 DOWNLOAD_STAGE,
-                ASSIGNMENT_ID,
                 ASSIGNMENT_NAME,
                 JPLAG_LANGUAGE,
                 JPLAG_REPOSITORY,
