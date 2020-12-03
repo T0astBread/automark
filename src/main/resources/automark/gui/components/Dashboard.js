@@ -178,10 +178,6 @@ export default class DashboardScreen extends Component {
         const terminal = this.terminalRef.current
         if (terminal != null) {
             const terminalText = terminal.children[0]
-            const childElementCount = terminalText.childElementCount
-            for (let i = 0; i < childElementCount - 2000; i++) {
-                terminalText.children[i].remove()
-            }
             const lineSpan = document.createElement("span")
             lineSpan.innerText = text
             terminalText.appendChild(lineSpan)
