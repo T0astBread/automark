@@ -289,11 +289,18 @@ h1 {
 }
 
 #terminal {
-    word-break: break-all;
-    flex-grow: 3;
+    display: block;
+    width: 40%;
+    min-width: 40%;
+    max-width: 50em;
     padding: 1em;
     background-color: #666666;
     color: white;
+}
+
+#terminal code {
+    display: block;
+    width: 100%;
 }
 
 .curtain {
