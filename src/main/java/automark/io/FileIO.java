@@ -43,4 +43,12 @@ public class FileIO {
             out.write(buffer, 0, n);
         }
     }
+
+    /**
+     * @return The platform's file separator but escaped for use in regex replacements
+     */
+    public static String getEscapedFileSeperator() {
+        final boolean isWindows = System.getProperty("os.name").contains("Windows");
+        return isWindows ? "\\\\" : File.separator;
+    }
 }

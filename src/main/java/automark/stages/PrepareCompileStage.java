@@ -57,7 +57,7 @@ public class PrepareCompileStage {
     }
 
     private static List<File> patchPackage(File submissionFolder, List<String> sourceFiles, String wantedPackage) throws IOException {
-        String packagePath = wantedPackage.replaceAll("\\.", File.separator) + File.separator;
+        String packagePath = wantedPackage.replaceAll("\\.", FileIO.getEscapedFileSeperator()) + File.separator;
         List<File> sourceFilesForCompilation = new ArrayList<>();
 
         for (String sourceFileName : sourceFiles) {
