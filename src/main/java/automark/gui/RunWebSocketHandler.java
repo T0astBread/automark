@@ -27,8 +27,10 @@ public class RunWebSocketHandler {
     }
 
     @OnWebSocketClose
-    public void closed(Session session, int statusCode, String reason) {
+    public void closed(Session session, int statusCode, String reason) throws IOException {
+        final PrintStream wsOut = System.out;
         System.setOut(originalSystemOut);
+        wsOut.close();
     }
 
     @OnWebSocketMessage
@@ -47,8 +49,9 @@ public class RunWebSocketHandler {
     }
 
     private void startNewThread(Session session) {
-        originalSystemOut = System.out;
-        System.setOut(new PrintStream(new WebSocketOutputStream(session)));
+        this.originalSystemOut = System.out;
+        WebSocketOutputStream wsOut = new WebSocketOutputStream(session);
+        System.setOut(new PrintStream(wsOut));
 
         try {
             while (Run.runAndStop(workingDir, commandLineArgs.enableInsecureDebugMechanisms, true)) {
@@ -61,14 +64,29 @@ public class RunWebSocketHandler {
             System.out.println();
             System.out.println(e.getMessage());
             System.out.flush();
-            session.close(new CloseStatus(400, e.getMessage()));
+            closeSession(session, wsOut, new CloseStatus(400, e.getMessage()));
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println();
             e.printStackTrace(System.out);
             System.out.flush();
-            session.close(new CloseStatus(500, e.getMessage()));
+            closeSession(session, wsOut, new CloseStatus(500, e.getMessage()));
+        }
+
+        try {
+            wsOut.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         session.close();
+    }
+
+    private void closeSession(Session session, WebSocketOutputStream wsOut, CloseStatus closeStatus) {
+        try {
+            wsOut.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        session.close(closeStatus);
     }
 }
