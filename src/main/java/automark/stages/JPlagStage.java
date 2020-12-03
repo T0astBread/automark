@@ -54,7 +54,7 @@ public class JPlagStage {
             File submissionInJPlag = new File(submissionsDir, currentYear + "_" + submission.getSlug());
 
             try {
-                if(submissionInJPlag.exists()) {
+                if (submissionInJPlag.exists()) {
                     System.out.println("Warning: Overriding existing submission folder in JPlag working dir. Was it already in the repo?");
                     FileIO.rm(submissionInJPlag);
                 }
@@ -77,25 +77,48 @@ public class JPlagStage {
             throw new UserFriendlyException("Failed to write JPlag jar", e);
         }
 
-        System.out.println("Running JPlag...");
-        try {
-            File parseLog = new File(jplagDir, "jplag-log.txt");
-            int exitCode = new ProcessBuilder()
-                    .command("java", "-jar", JPLAG_JAR_NAME,
-                            "-vl", "-s", "-l", language,
-                            "-r", resultsDir.getAbsolutePath(),
-                            "-o", parseLog.getAbsolutePath(),
-                            submissionsDir.getAbsolutePath())
-                    .directory(jplagDir)
-                    .inheritIO()
-                    .start()
-                    .waitFor();
-
-            if (exitCode != 0) {
-                throw new UserFriendlyException("JPlag exited with non-zero exit status " + exitCode);
+        final int amountOfSubmissionsInDir = submissionsDir.list().length;
+        final boolean skipJPlagExecution = amountOfSubmissionsInDir < 2;
+        if (skipJPlagExecution) {
+            System.out.println();
+            System.out.println("=========================================================================");
+            System.out.println("WARNING: Skipping JPlag execution as the submissions directory contains");
+            switch (amountOfSubmissionsInDir) {
+                case 0:
+                    System.out.println("no submissions.");
+                    break;
+                case 1:
+                    System.out.println("only one submission (either from this or from previous years).");
+                    System.out.println();
+                    System.out.println("If the submission is from this year, it will be copied into the JPlag\n" +
+                            "repository and you will have to delete it manually in case you roll back.");
+                    break;
+                default:
+                    throw new UserFriendlyException("Reading of amount of children in submissions directory is invalid: " + amountOfSubmissionsInDir);
             }
-        } catch (InterruptedException | IOException e) {
-            throw new UserFriendlyException("Failed to run JPlag", e);
+            System.out.println("=========================================================================");
+            System.out.println();
+        } else {
+            System.out.println("Running JPlag...");
+            try {
+                File parseLog = new File(jplagDir, "jplag-log.txt");
+                int exitCode = new ProcessBuilder()
+                        .command("java", "-jar", JPLAG_JAR_NAME,
+                                "-vl", "-s", "-l", language,
+                                "-r", resultsDir.getAbsolutePath(),
+                                "-o", parseLog.getAbsolutePath(),
+                                submissionsDir.getAbsolutePath())
+                        .directory(jplagDir)
+                        .inheritIO()
+                        .start()
+                        .waitFor();
+
+                if (exitCode != 0) {
+                    throw new UserFriendlyException("JPlag exited with non-zero exit status " + exitCode);
+                }
+            } catch (InterruptedException | IOException e) {
+                throw new UserFriendlyException("Failed to run JPlag", e);
+            }
         }
 
         System.out.println("Copying submissions to JPlag repo...");
@@ -109,16 +132,18 @@ public class JPlagStage {
             }
         }
 
-        URI resultsURI = new File(resultsDir, "index.html").toURI();
-        Desktop desktop = Desktop.getDesktop();
-        if (desktop != null) {
-            try {
-                desktop.browse(resultsURI);
-            } catch (Exception e) {
-                e.printStackTrace(System.out);
-                System.out.println("Unable to open JPLag results in browser");
-                System.out.println();
-                System.out.println(resultsURI);
+        if (!skipJPlagExecution) {
+            URI resultsURI = new File(resultsDir, "index.html").toURI();
+            Desktop desktop = Desktop.getDesktop();
+            if (desktop != null) {
+                try {
+                    desktop.browse(resultsURI);
+                } catch (Exception e) {
+                    e.printStackTrace(System.out);
+                    System.out.println("Unable to open JPLag results in browser");
+                    System.out.println();
+                    System.out.println(resultsURI);
+                }
             }
         }
 
