@@ -128,6 +128,7 @@ public class MoodleSession implements AutoCloseable {
         Connection.Response response = Jsoup.connect(submission.getFileURL())
                 .cookies(this.sessionCookies)
                 .ignoreContentType(true)
+                .maxBodySize(0)
                 .execute();
         mergeCookies(response.cookies());
 
