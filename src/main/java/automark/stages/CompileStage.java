@@ -107,6 +107,7 @@ public class CompileStage {
         String summary = diagnostics.stream()
                 .filter(diagnostic -> diagnostic.getKind() != Diagnostic.Kind.NOTE)
                 .map(diagnostic -> diagnostic.getMessage(null)
+                        + " in " + new File(diagnostic.getSource().getName()).getName()
                         + " at " + diagnostic.getLineNumber()
                         + ":" + diagnostic.getColumnNumber())
                 .collect(Collectors.joining("\n"));
