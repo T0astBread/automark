@@ -52,7 +52,7 @@ public class WebSocketOutputStream extends OutputStream {
         if (this.session.isOpen()) {
             synchronized (this.buffer) {
                 if (this.buffer.length() > 0) {
-                    this.session.getRemote().sendString("l" + buffer.toString());
+                    this.session.getRemote().sendString("l" + this.buffer.toString());
                     this.buffer.delete(0, this.buffer.length());
                 }
             }

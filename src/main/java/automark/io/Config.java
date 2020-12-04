@@ -48,7 +48,7 @@ public class Config {
                 ASSIGNMENT_NAME,
                 JPLAG_LANGUAGE,
                 JPLAG_REPOSITORY,
-                SOURCE_FILES
+                SOURCE_FILES,
         };
 
         List<String> missingRequiredProperties = new ArrayList<>();

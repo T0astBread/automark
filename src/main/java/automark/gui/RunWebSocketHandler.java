@@ -29,14 +29,14 @@ public class RunWebSocketHandler {
     @OnWebSocketClose
     public void closed(Session session, int statusCode, String reason) throws IOException {
         final PrintStream wsOut = System.out;
-        System.setOut(originalSystemOut);
+        System.setOut(this.originalSystemOut);
         wsOut.close();
     }
 
     @OnWebSocketMessage
     public void message(Session session, String message) throws IOException {
-        if (!isRunning) {
-            if (secret.equals(message) || commandLineArgs.enableInsecureDebugMechanisms) {
+        if (!this.isRunning) {
+            if (this.secret.equals(message) || this.commandLineArgs.enableInsecureDebugMechanisms) {
                 startNewThread(session);
             } else {
                 session.close(new CloseStatus(401, "Not allowed"));
@@ -54,7 +54,7 @@ public class RunWebSocketHandler {
         System.setOut(new PrintStream(wsOut));
 
         try {
-            while (Run.runAndStop(workingDir, commandLineArgs.enableInsecureDebugMechanisms, true)) {
+            while (Run.runAndStop(this.workingDir, this.commandLineArgs.enableInsecureDebugMechanisms, true)) {
                 session.getRemote().sendString("s");
             }
         } catch (UserFriendlyException e) {
