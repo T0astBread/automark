@@ -22,7 +22,7 @@ public class TestStage {
     public static List<Submission> run(File workingDir, Properties config, List<Submission> submissions) throws UserFriendlyException {
         // Read test suite data
         File compileDir = new File(Metadata.getDataDir(workingDir), "compile");
-        List<File> testFiles = Metadata.getTestFiles(workingDir, config);
+        List<File> testFiles = SubmissionUtils.getTestFiles(workingDir, config);
         List<File> testSuiteFiles = testFiles.stream()
                 .filter(testFile -> testFile.getName().endsWith(".java"))
                 .collect(Collectors.toList());
@@ -69,7 +69,7 @@ public class TestStage {
             for (TestSuite testSuite : testSuites) {
                 // Load test suite class
                 Class testClass = null;
-                String testClassCanonical = Metadata.getPackageNameForSubmission(submission) + "." + testSuite.getName();
+                String testClassCanonical = SubmissionUtils.getPackageNameForSubmission(submission) + "." + testSuite.getName();
                 try {
                     testClass = classLoader.loadClass(testClassCanonical);
                     System.out.println("Loaded class: " + testClass.getCanonicalName());

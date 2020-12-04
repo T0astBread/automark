@@ -14,7 +14,7 @@ public class PrepareCompileStage {
     public static List<Submission> run(File workingDir, Properties config, List<Submission> submissions) throws UserFriendlyException {
         File extractDir = new File(Metadata.getDataDir(workingDir), "extract");
         File prepareCompileDir = Metadata.mkStageDir(Stage.PREPARE_COMPILE, workingDir);
-        List<File> testFiles = Metadata.getTestFiles(workingDir, config);
+        List<File> testFiles = SubmissionUtils.getTestFiles(workingDir, config);
 
         for (Submission submission : submissions) {
             if (submission.isDisqualified())
@@ -46,7 +46,7 @@ public class PrepareCompileStage {
 
             try {
                 List<String> sourceFiles = List.of(Objects.requireNonNull(submissionInPrepareCompile.list()));
-                patchPackage(submissionInPrepareCompile, sourceFiles, Metadata.getPackageNameForSubmission(submission));
+                patchPackage(submissionInPrepareCompile, sourceFiles, SubmissionUtils.getPackageNameForSubmission(submission));
             } catch (Exception e) {
                 submission.addProblem(Problem.createException(Stage.PREPARE_COMPILE,
                         new UnexpectedException("Failed to patch package headers in submission " + submission.getSlug(), e)));
