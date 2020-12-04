@@ -205,7 +205,7 @@ public class TestStage {
                 .append(method.getMethodName());
 
         if (method.getDescription() != null) {
-            summary.append("\n")
+            summary.append("\n  ")
                     .append(method.getDescription());
         }
 
