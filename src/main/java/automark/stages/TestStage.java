@@ -179,7 +179,7 @@ public class TestStage {
                 if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
                     TestSource source = testIdentifier.getSource().orElse(null);
                     if (source instanceof MethodSource) {
-                        succeededTests.add(testIdentifier.getDisplayName());
+                        succeededTests.add(((MethodSource) source).getMethodName());
                     }
                 }
             }
