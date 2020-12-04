@@ -18,6 +18,7 @@ const INITIAL_STATE = {
 	jplagRepository: null,
 	sourceFiles: "",
 	testsDir: null,
+	testResourceDir: null,
 	downloadStage: "moodle",
 	moodleAssignmentID: null,
 	moodleBaseURL: null,
@@ -182,6 +183,7 @@ export default class ConfigEditor extends Component {
             jplagRepository,
             sourceFiles,
             testsDir,
+            testResourceDir,
             downloadStage,
             moodleAssignmentID,
             moodleBaseURL,
@@ -268,6 +270,17 @@ export default class ConfigEditor extends Component {
                         <button type="button"
                             class="choose"
                             onClick="${() => this.onPathSelectButtonClick('testsDir')}">
+                            Choose...
+                        </button>
+                        <label for="${type}_testsDirInput" class="full">Test resource directory</label>
+                        <input name="testResourceDir"
+                            id="${type}_testResourceDirInput"
+                            class="has-choose-button"
+                            defaultValue="${testResourceDir}"
+                            onInput="${this.onInputChange.bind(this)}"/>
+                        <button type="button"
+                            class="choose"
+                            onClick="${() => this.onPathSelectButtonClick('testResourceDir')}">
                             Choose...
                         </button>
                         <label id="${type}_download-stage-label" class="more-distance-top">Download stage to use</label>
