@@ -18,7 +18,7 @@ import java.util.*;
 
 public class TestStage {
 
-    private static final String METHOD_SIGNATURE_LINE_REGEX = "^\\s*public\\s+void\\s+(\\w+)\\([\\w\\s,]*\\).*$";
+    private static final String METHOD_SIGNATURE_LINE_REGEX = "^\\s*(?:(?:public|protected|private)\\s+)?void\\s+(\\w+)\\([\\w\\s,]*\\).*$";
 
     public static List<Submission> run(File workingDir, Properties config, List<Submission> submissions) throws UserFriendlyException {
         // Read test suite data
