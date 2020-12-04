@@ -90,17 +90,7 @@ public class TestStage {
                 final PrintStream sout = System.out;
                 Thread testThread = new Thread(() -> {
                     System.out.println("Testing submission " + submission.getSlug());
-
-                    // Mute System.out
-                    System.setOut(new PrintStream(new OutputStream() {
-                        public void write(int b) {
-                            //DO NOTHING
-                        }
-                    }));
-
                     runTests(testSuite, finalTestClass, submission);
-
-                    System.setOut(sout);
                     System.out.println("Thread " + threadNum + " is done");
                 });
                 testThread.setPriority(Thread.MIN_PRIORITY);
