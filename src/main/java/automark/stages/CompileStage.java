@@ -22,7 +22,7 @@ public class CompileStage {
             throw new UserFriendlyException("Failed to copy prepared submissions to compilation working dir", e);
         }
 
-        List<File> testFiles = Metadata.getTestFiles(workingDir);
+        List<File> testFiles = Metadata.getTestFiles(workingDir, config);
         Set<String> testFileNames = testFiles.stream()
                 .map(File::getName)
                 .collect(Collectors.toSet());

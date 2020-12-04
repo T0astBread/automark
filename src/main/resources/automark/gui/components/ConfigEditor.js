@@ -17,6 +17,7 @@ const INITIAL_STATE = {
 	jplagLanguage: "java19",
 	jplagRepository: null,
 	sourceFiles: "",
+	testsDir: null,
 	downloadStage: "moodle",
 	moodleAssignmentID: null,
 	moodleBaseURL: null,
@@ -180,6 +181,7 @@ export default class ConfigEditor extends Component {
             jplagLanguage,
             jplagRepository,
             sourceFiles,
+            testsDir,
             downloadStage,
             moodleAssignmentID,
             moodleBaseURL,
@@ -251,12 +253,23 @@ export default class ConfigEditor extends Component {
                             onClick="${() => this.onPathSelectButtonClick('jplagRepository')}">
                             Choose...
                         </button>
-                        <label for="${type}_sourceFilesInput" class="full">Source files (comma-seperated Java file names)</label>
+                        <label for="${type}_sourceFilesInput" class="full more-distance-top">Source files (comma-seperated Java file names)</label>
                         <input name="sourceFiles"
                             id="${type}_sourceFilesInput"
                             defaultValue="${sourceFiles}"
                             onInput="${this.onInputChange.bind(this)}"
                             pattern="${SOURCE_FILES_REGEX}"/>
+                        <label for="${type}_testsDirInput" class="full">Tests directory</label>
+                        <input name="testsDir"
+                            id="${type}_testsDirInput"
+                            class="has-choose-button"
+                            defaultValue="${testsDir}"
+                            onInput="${this.onInputChange.bind(this)}"/>
+                        <button type="button"
+                            class="choose"
+                            onClick="${() => this.onPathSelectButtonClick('testsDir')}">
+                            Choose...
+                        </button>
                         <label id="${type}_download-stage-label" class="more-distance-top">Download stage to use</label>
                         <div class="radio-option">
                             <input type="radio"

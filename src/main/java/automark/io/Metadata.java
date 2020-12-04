@@ -85,8 +85,11 @@ public class Metadata {
         return stageDir;
     }
 
-    public static List<File> getTestFiles(File workingDir) {
-        File testsDir = new File(workingDir, "tests");
+    public static List<File> getTestFiles(File workingDir, Properties config) {
+        String testsDirProp = config.getProperty(Config.TESTS_DIR, null);
+        if (testsDirProp == null)
+            return new ArrayList<>();
+        File testsDir = Config.asFile(testsDirProp, workingDir);
         File[] testFiles = testsDir.listFiles();
         return testFiles == null ? new ArrayList<>() : List.of(testFiles);
     }

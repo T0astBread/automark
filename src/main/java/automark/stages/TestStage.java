@@ -23,7 +23,7 @@ public class TestStage {
     public static List<Submission> run(File workingDir, Properties config, List<Submission> submissions) throws UserFriendlyException {
         // Read test suite data
         File compileDir = new File(Metadata.getDataDir(workingDir), "compile");
-        List<File> testFiles = Metadata.getTestFiles(workingDir);
+        List<File> testFiles = Metadata.getTestFiles(workingDir, config);
         List<TestSuite> testSuites = readTestSuites(testFiles);
 
         // Print overview of parsed tests

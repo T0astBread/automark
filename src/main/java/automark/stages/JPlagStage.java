@@ -21,7 +21,7 @@ public class JPlagStage {
         String assignmentName = config.getProperty(Config.ASSIGNMENT_NAME);
         String language = config.getProperty(Config.JPLAG_LANGUAGE);
 
-        File repoDir = Config.asFile(config.getProperty(Config.JPLAG_REPOSITORY));
+        File repoDir = Config.asFile(config.getProperty(Config.JPLAG_REPOSITORY), workingDir);
         if (!(repoDir.exists() && repoDir.isDirectory()))
             throw new UserFriendlyException("JPlag repository directory doesn't exist (looked for " + repoDir.getAbsolutePath() + ")");
 

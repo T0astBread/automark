@@ -13,7 +13,7 @@ public class PrepareCompileStage {
     public static List<Submission> run(File workingDir, Properties config, List<Submission> submissions) throws UserFriendlyException {
         File extractDir = new File(Metadata.getDataDir(workingDir), "extract");
         File prepareCompileDir = Metadata.mkStageDir(Stage.PREPARE_COMPILE, workingDir);
-        List<File> testFiles = Metadata.getTestFiles(workingDir);
+        List<File> testFiles = Metadata.getTestFiles(workingDir, config);
 
         for (Submission submission : submissions) {
             if (submission.isDisqualified())

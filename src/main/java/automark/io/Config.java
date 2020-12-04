@@ -16,6 +16,7 @@ public class Config {
     public static final String MOODLE_TEACHERS = "moodleTeachers";
     public static final String MOODLE_USERNAME = "moodleUsername";
     public static final String SOURCE_FILES = "sourceFiles";
+    public static final String TESTS_DIR = "testsDir";
     public static final String EMAIL_STAGE_ENABLED = "emailStageEnabled";
     public static final String SMTP_HOST = "smtpHost";
     public static final String SMTP_PORT = "smtpPort";
@@ -67,8 +68,11 @@ public class Config {
         return List.of(configProp.split(",\\s+"));
     }
 
-    public static File asFile(String configProp) {
-        return new File(configProp);
+    public static File asFile(String configProp, File workingDir) {
+        File f = new File(configProp);
+        if (!f.isAbsolute())
+            f = new File(workingDir, configProp);
+        return f;
     }
 
     public static int asInt(String configProp) {
