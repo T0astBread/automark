@@ -25,6 +25,7 @@ public class CompileStage {
         List<File> testFiles = Metadata.getTestFiles(workingDir, config);
         Set<String> testFileNames = testFiles.stream()
                 .map(File::getName)
+                .filter(fileName -> fileName.endsWith(".java"))
                 .collect(Collectors.toSet());
 
         for (Submission submission : submissions) {

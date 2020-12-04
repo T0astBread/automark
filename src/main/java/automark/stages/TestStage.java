@@ -6,15 +6,14 @@ import automark.models.*;
 import automark.stages.test.*;
 import org.junit.platform.engine.*;
 import org.junit.platform.engine.discovery.*;
-import org.junit.platform.engine.reporting.*;
 import org.junit.platform.engine.support.descriptor.*;
 import org.junit.platform.launcher.*;
 import org.junit.platform.launcher.core.*;
-import org.junit.platform.launcher.listeners.*;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class TestStage {
 
@@ -24,7 +23,10 @@ public class TestStage {
         // Read test suite data
         File compileDir = new File(Metadata.getDataDir(workingDir), "compile");
         List<File> testFiles = Metadata.getTestFiles(workingDir, config);
-        List<TestSuite> testSuites = readTestSuites(testFiles);
+        List<File> testSuiteFiles = testFiles.stream()
+                .filter(testFile -> testFile.getName().endsWith(".java"))
+                .collect(Collectors.toList());
+        List<TestSuite> testSuites = readTestSuites(testSuiteFiles);
 
         // Print overview of parsed tests
         System.out.println();

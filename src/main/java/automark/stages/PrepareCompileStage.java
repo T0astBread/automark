@@ -7,6 +7,7 @@ import automark.models.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class PrepareCompileStage {
 
@@ -56,30 +57,34 @@ public class PrepareCompileStage {
         return submissions;
     }
 
-    private static List<File> patchPackage(File submissionFolder, List<String> sourceFiles, String wantedPackage) throws IOException {
+    private static List<File> patchPackage(File submissionFolder, List<String> sourceAndResourceFiles, String wantedPackage) throws IOException {
         String packagePath = wantedPackage.replaceAll("\\.", FileIO.getEscapedFileSeperator()) + File.separator;
         List<File> sourceFilesForCompilation = new ArrayList<>();
 
-        for (String sourceFileName : sourceFiles) {
+        for (String sourceFileName : sourceAndResourceFiles) {
             File sourceFile = new File(submissionFolder, sourceFileName);
             File destFile = new File(submissionFolder, packagePath + sourceFile.getName());
 
             if (sourceFile.exists()) {
                 destFile.getParentFile().mkdirs();
 
-                try (BufferedReader reader = new BufferedReader(new FileReader(sourceFile));
-                     FileWriter writer = new FileWriter(destFile)) {
-                    while (true) {
-                        String line = reader.readLine();
-                        if (line == null) break;
+                if (sourceFileName.endsWith(".java")) {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(sourceFile));
+                         FileWriter writer = new FileWriter(destFile)) {
+                        while (true) {
+                            String line = reader.readLine();
+                            if (line == null) break;
 
-                        line = line.replaceFirst("^package [^;]+;", "package " + wantedPackage + ";");
-                        writer.write(line);
-                        writer.write("\n");
+                            line = line.replaceFirst("^package [^;]+;", "package " + wantedPackage + ";");
+                            writer.write(line);
+                            writer.write("\n");
+                        }
                     }
+                    sourceFilesForCompilation.add(destFile);
+                } else {
+                    Files.copy(sourceFile.toPath(), destFile.toPath());
                 }
                 sourceFile.delete();
-                sourceFilesForCompilation.add(destFile);
             }
         }
         return sourceFilesForCompilation;
