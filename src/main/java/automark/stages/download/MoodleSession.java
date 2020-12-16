@@ -103,8 +103,7 @@ public class MoodleSession implements AutoCloseable {
             String slug = studentName
                     .trim()
                     .toLowerCase()
-                    .replaceAll("\\s", "_")
-                    + "_" + i;
+                    .replaceAll("\\s", "_");
 
             submissions.add(new Submission(slug, studentName, studentEmail, fileUrl));
         }

@@ -54,12 +54,11 @@ public class BypassDownloadStage {
         String[] submissionDirs = unzipDir1.list();
         if (submissionDirs == null)
             throw new UserFriendlyException("Failed to list extracted submissions");
-        for (int i = 0; i < submissionDirs.length; i++) {
-            String submissionDirName = submissionDirs[i];
+        for (String submissionDirName : submissionDirs) {
             String[] parts = submissionDirName.split("_");
 
             String name = parts[0];
-            String slug = name.toLowerCase().replaceAll("\\s", "_") + "_" + i;
+            String slug = name.toLowerCase().replaceAll("\\s", "_");
             String email = emails.get(name);
 
             Submission submission = new Submission(slug, name, email, null);
