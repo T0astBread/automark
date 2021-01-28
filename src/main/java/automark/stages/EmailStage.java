@@ -55,6 +55,11 @@ public class EmailStage {
 
         File summaryDir = new File(Metadata.getDataDir(workingDir), "summary");
         for (Submission submission : submissions) {
+            if (submission.getProblems().stream()
+                    .anyMatch(problem -> problem.type == Problem.Type.NOT_SUBMITTED)) {
+                continue;
+            }
+
             File submissionSummaryFile = new File(summaryDir, submission.getSlug() + ".txt");
             try (BufferedReader reader = new BufferedReader(new FileReader(submissionSummaryFile))) {
                 String subject = reader.readLine().substring("Subject: ".length());
