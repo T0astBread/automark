@@ -30,6 +30,7 @@ These are the stages of Automark in order of execution:
 | __COMPILE__ | Compiles source files __in the same classpath as Automark is running in__ |
 | __TEST__ | Tests submissions against a set of specified test suites __in the same classpath as Automark is running in__ |
 | __SUMMARY__ | Generates a report containing test failures and other problems for each submission |
+| __EMAIL__ | Sends generated reports to students via email |
 
 Stages are run without manual intervention unless required.
 If a submission fails to fulfill the requirements of a stage, it will
