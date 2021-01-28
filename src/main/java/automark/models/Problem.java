@@ -44,4 +44,8 @@ public class Problem {
     public static Problem createdPlagiarized() {
         return new Problem(null, Type.PLAGIARIZED);
     }
+
+    public static Problem createTestSuiteFailure(Stage stage, String testSuiteName, String reason) {
+        return new Problem(stage, Problem.Type.TEST_SUITE_FAILURE, testSuiteName + "\n" + reason);
+    }
 }

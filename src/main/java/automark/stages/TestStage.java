@@ -75,10 +75,19 @@ public class TestStage {
                     System.out.println("Loaded class: " + testClass.getCanonicalName());
                 } catch (Throwable e) {
                     e.printStackTrace(System.out);
-                    submission.addProblem(createTestSuiteFailProblem(
-                            testSuite.getName(),
-                            "Class not loaded (possibly due to compilation error in test class when compiled with submission sources)"
-                    ));
+                    boolean failedToCompile = submission
+                            .getProblems()
+                            .stream()
+                            .anyMatch(problem -> problem.type == Problem.Type.TEST_SUITE_FAILURE
+                                    && problem.stage == Stage.COMPILE
+                                    && problem.summary.startsWith(testSuite.getName()));
+                    if (!failedToCompile) {
+                        submission.addProblem(Problem.createTestSuiteFailure(
+                                Stage.TEST,
+                                testSuite.getName(),
+                                "Class not loaded: " + e.getClass().getSimpleName()
+                        ));
+                    }
                     continue;
                 }
 
@@ -104,7 +113,8 @@ public class TestStage {
                 if (testThread.isAlive()) {
                     testThread.stop();
                     System.out.println("Warning: Forcefully killed test thread for " + submission.getSlug());
-                    submission.addProblem(createTestSuiteFailProblem(
+                    submission.addProblem(Problem.createTestSuiteFailure(
+                            Stage.TEST,
                             testSuite.getName(),
                             "Timeout (some tests might not have been run)"
                     ));
@@ -184,10 +194,6 @@ public class TestStage {
         testSuiteData.getMethods().stream()
                 .filter(testMethod -> !succeededTests.contains(testMethod.getMethodName()))
                 .forEach(failedTestMethod -> submission.addProblem(createTestFailProblem(testSuiteData.getName(), failedTestMethod)));
-    }
-
-    private static Problem createTestSuiteFailProblem(String testSuiteName, String reason) {
-        return new Problem(Stage.TEST, Problem.Type.TEST_SUITE_FAILURE, testSuiteName + "\n" + reason);
     }
 
     private static Problem createTestFailProblem(String testSuiteName, TestMethod method) {

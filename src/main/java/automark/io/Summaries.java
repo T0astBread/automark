@@ -6,6 +6,8 @@ import java.io.*;
 import java.util.*;
 
 public class Summaries {
+    public static final String INDENTATION = "  ";
+
     public static void printShortSummary(PrintStream out, List<Submission> submissions) {
         submissions.forEach(submission -> {
             out.print(submission.getSlug());
@@ -41,7 +43,7 @@ public class Summaries {
                 submission.getProblems().forEach(problem -> {
                     printIndentation(out, 1);
                     out.print(problem.type);
-                    if(problem.stage != null) {
+                    if (problem.stage != null) {
                         out.print(" in stage ");
                         out.print(problem.stage.name());
                     }
@@ -56,7 +58,7 @@ public class Summaries {
     }
 
     public static void printIndentation(PrintStream out, int level) {
-        out.print("  ".repeat(level));
+        out.print(INDENTATION.repeat(level));
     }
 
     public static void printProblemSummary(PrintStream out, Problem problem, int indentation) {

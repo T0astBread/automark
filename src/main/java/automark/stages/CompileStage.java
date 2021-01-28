@@ -61,15 +61,39 @@ public class CompileStage {
 
                 List<Diagnostic<? extends JavaFileObject>> diagnosticsWithTests = compile(sourcesWithTests);
                 if (diagnosticsWithTests != null) {
+                    Map<String, StringBuilder> descriptionsForTestSuiteCompilationProblems = new HashMap<>();
+
                     System.out.println();
                     System.out.println("Compilation error(s) in submission " + submission.getSlug() + " when compiled with test suites:");
                     System.out.println();
+
                     for (Diagnostic<? extends JavaFileObject> diagnostic : diagnosticsWithTests) {
-                        String fileName = diagnostic.getSource().toUri().toString();
+                        String filePath = diagnostic.getSource().toUri().toString();
                         String errorMessage = diagnostic.getMessage(null) + ", line (" + diagnostic.getLineNumber() + ")";
-                        System.out.println(fileName);
+                        System.out.println(filePath);
                         System.out.println(errorMessage);
+
+                        String fileName = Path.of(diagnostic.getSource().toUri()).getFileName().toString();
+
+                        if (testFileNames.contains(fileName)) {
+                            descriptionsForTestSuiteCompilationProblems
+                                    .computeIfAbsent(fileName, k -> new StringBuilder("Failed to compile test suite:\n"))
+                                    .append(Summaries.INDENTATION)
+                                    .append(errorMessage
+                                            .replaceAll("\n", "\n" + Summaries.INDENTATION)
+                                            .trim())
+                                    .append("\n");
+                        }
                     }
+                    descriptionsForTestSuiteCompilationProblems
+                            .forEach((testSuiteFileName, problemDescription) -> {
+                                Problem problem = Problem.createTestSuiteFailure(
+                                        Stage.COMPILE,
+                                        testSuiteFileName.substring(0, testSuiteFileName.length() - ".java".length()),
+                                        problemDescription.toString()
+                                );
+                                submission.addProblem(problem);
+                            });
                 }
             } catch (IOException e) {
                 submission.addProblem(Problem.createException(Stage.COMPILE, e));
