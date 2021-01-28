@@ -58,7 +58,7 @@ public class BypassDownloadStage {
             String[] parts = submissionDirName.split("_");
 
             String name = parts[0];
-            String slug = name.toLowerCase().replaceAll("\\s", "_");
+            String slug = SubmissionUtils.getSlugFromName(name);
             String email = emails.get(name);
 
             Submission submission = new Submission(slug, name, email, null);

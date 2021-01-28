@@ -100,10 +100,7 @@ public class MoodleSession implements AutoCloseable {
             if (fileLink != null)
                 fileUrl = fileLink.attr("href");
 
-            String slug = studentName
-                    .trim()
-                    .toLowerCase()
-                    .replaceAll("\\s", "_");
+            String slug = SubmissionUtils.getSlugFromName(studentName);
 
             submissions.add(new Submission(slug, studentName, studentEmail, fileUrl));
         }

@@ -7,6 +7,17 @@ import java.util.*;
 
 public class SubmissionUtils {
 
+    public static String getSlugFromName(String fullName) {
+        return fullName
+                .trim()
+                .toLowerCase()
+                .replaceAll("\\s", "_")
+                .replaceAll("ä", "ae")
+                .replaceAll("ö", "oe")
+                .replaceAll("ü", "ue")
+                .replaceAll("ß", "sz");
+    }
+
     public static List<File> getTestFiles(File workingDir, Properties config) {
         String testsDirProp = config.getProperty(Config.TESTS_DIR, null);
         if (testsDirProp == null)
