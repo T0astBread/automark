@@ -68,21 +68,25 @@ public class CompileStage {
                     System.out.println();
 
                     for (Diagnostic<? extends JavaFileObject> diagnostic : diagnosticsWithTests) {
-                        String filePath = diagnostic.getSource().toUri().toString();
-                        String errorMessage = diagnostic.getMessage(null) + ", line (" + diagnostic.getLineNumber() + ")";
-                        System.out.println(filePath);
-                        System.out.println(errorMessage);
+                        if (diagnostic.getSource() == null) {
+                            System.out.println(diagnostic.getMessage(null));
+                        } else {
+                            String filePath = diagnostic.getSource().toUri().toString();
+                            String errorMessage = diagnostic.getMessage(null) + ", line (" + diagnostic.getLineNumber() + ")";
+                            System.out.println(filePath);
+                            System.out.println(errorMessage);
 
-                        String fileName = Path.of(diagnostic.getSource().toUri()).getFileName().toString();
+                            String fileName = Path.of(diagnostic.getSource().toUri()).getFileName().toString();
 
-                        if (testFileNames.contains(fileName)) {
-                            descriptionsForTestSuiteCompilationProblems
-                                    .computeIfAbsent(fileName, k -> new StringBuilder("Failed to compile test suite:\n"))
-                                    .append(Summaries.INDENTATION)
-                                    .append(errorMessage
-                                            .replaceAll("\n", "\n" + Summaries.INDENTATION)
-                                            .trim())
-                                    .append("\n");
+                            if (testFileNames.contains(fileName)) {
+                                descriptionsForTestSuiteCompilationProblems
+                                        .computeIfAbsent(fileName, k -> new StringBuilder("Failed to compile test suite:\n"))
+                                        .append(Summaries.INDENTATION)
+                                        .append(errorMessage
+                                                .replaceAll("\n", "\n" + Summaries.INDENTATION)
+                                                .trim())
+                                        .append("\n");
+                            }
                         }
                     }
                     descriptionsForTestSuiteCompilationProblems
