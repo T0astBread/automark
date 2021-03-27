@@ -20,6 +20,9 @@ public class SummaryStage {
                 out.println(config.getProperty(Config.ASSIGNMENT_NAME));
                 out.println();
 
+                System.out.println();
+                System.out.println();
+
                 combinedPrintln(out, submission.getStudentName());
 
                 if (submission.getProblems().size() > 0) {
@@ -42,13 +45,13 @@ public class SummaryStage {
                     combinedPrintIndentation(out, 1);
                     combinedPrintln(out, "No problems");
                 }
-
-                System.out.println();
-                System.out.println();
             } catch (FileNotFoundException e) {
                 throw new UserFriendlyException("Failed to write summary", e);
             }
         }
+
+        System.out.println();
+        System.out.println();
 
         return submissions;
     }
