@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'automark'
-version '0.4.3-HEAD'
+version '0.4.4-HEAD'
 
 application.mainClassName = 'automark.Main'
 
