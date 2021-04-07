@@ -6,6 +6,7 @@ import automark.models.*;
 
 import java.io.*;
 import java.nio.file.*;
+import java.nio.file.attribute.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -35,9 +36,16 @@ public class ExtractStage {
                 if (filesToCopy.size() > 0) {
                     // Copy wanted files from unzip dir to extract dir
                     for (File file : filesToCopy) {
+                        Path filePath = file.toPath();
+                        if (!file.canRead()) {
+                            System.out.println("Got unreadable file from UNZIP, trying to make readable: " + filePath);
+                            final Set<PosixFilePermission> filePerms = Files.getPosixFilePermissions(filePath);
+                            filePerms.add(PosixFilePermission.OWNER_READ);
+                            Files.setPosixFilePermissions(filePath, filePerms);
+                        }
                         submissionInExtract.mkdirs();
                         File destFile = new File(submissionInExtract, file.getName());
-                        Files.copy(file.toPath(), destFile.toPath());
+                        Files.copy(filePath, destFile.toPath());
                     }
                 } else {
                     submission.addProblem(Problem.createInvalidSubmissionFile(Stage.EXTRACT, "None of the wanted source files found"));
